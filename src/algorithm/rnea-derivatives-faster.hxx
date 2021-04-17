@@ -91,65 +91,32 @@ namespace pinocchio
       motionSet::motionAction( vJ ,J_cols, vdJ_cols );
       vdJ_cols.noalias() += 2*dJ_cols;
 
+
       // velocity and accelaration finishing
       ov += vJ;
       oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
       // Composite rigid body inertia
-      data.oYcrb[i] = data.oMi[i].act(Y);
-      
-      Matrix6 I = Y.matrix();
-      Matrix3 Ibar = (Y.inertia() - AlphaSkewSquare(Y.mass(),Y.lever())).matrix();
-      Matrix3 wcross;
-      Matrix3 Bang, Blin;
+      data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
+      const Inertia & oY =  data.oYcrb[i] ;
 
+
+      data.oh[i] = oY * ov;
+      data.of[i] = oY * oa + ov.cross(data.oh[i]);
+
+      // This could probably be put into a class for future use.
+      const Matrix3 Ibar = (oY.inertia() - AlphaSkewSquare(oY.mass(),oY.lever())).matrix();
+      const Matrix3 wcross = skew(ov.angular());
+      Matrix3 Bang, Blin;
       Vector3 hw = Ibar*ov.angular();
-      skew(ov.angular(),wcross);
       Bang = wcross*Ibar - Ibar*wcross;
       addSkew(-hw , Bang);
-      Bang -= 2*Y.mass()*skew(Y.lever())*skew(ov.linear());
-
-      data.oh[i] = Y * ov;
-
+      Bang -= 2*oY.mass()*skew(oY.lever())*skew(ov.linear());
       Blin = skew(- 2*data.oh[i].linear() );
-
-
-
-      std::cout << "v" << std::endl;
-      std::cout << ov << std::endl;
-
-      std::cout << "I" << std::endl;
-      std::cout << I << std::endl;
-      std::cout << Ibar << std::endl;
-
-
-      // Momentum and force
-      
-      data.of[i] = data.oYcrb[i] * oa + ov.cross(data.oh[i]);
-
-      // Coriolis matrix: TODO: replace with Coriolis matrix object
-
-      data.Bcrb[i] = data.oYcrb[i].variation(data.ov[i]); 
-      addForceCrossMatrix(data.oh[i],data.Bcrb[i]);
-
-      std::cout << "B" << std::endl;
-      std::cout << data.Bcrb[i] << std::endl;
-      std::cout << Blin << std::endl;
-      std::cout << Bang << std::endl;     
-
-      
+      data.Bcrb[i].template topRightCorner<3,3>() = Blin;
+      data.Bcrb[i].template bottomRightCorner<3,3>() = Bang;
+      data.Bcrb[i].template leftCols<3>().setZero(); // There is an untapped opportunity to exploit the sparsity here.     
     }
-    
-    template<typename ForceDerived, typename M6>
-    static void addForceCrossMatrix(const ForceDense<ForceDerived> & f,
-                                    const Eigen::MatrixBase<M6> & mout)
-    {
-      M6 & mout_ = PINOCCHIO_EIGEN_CONST_CAST(M6,mout);
-      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::LINEAR,ForceDerived::ANGULAR));
-      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::LINEAR));
-      addSkew(-f.angular(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::ANGULAR));
-    }
-
   };
   
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename MatrixType1, typename MatrixType2, typename MatrixType3>
