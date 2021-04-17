@@ -506,4 +506,12 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+
+
+
+
+
+
+
+
 #endif // ifndef __pinocchio_rnea_derivatives_hxx__

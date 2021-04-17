@@ -2,8 +2,8 @@
 // Copyright (c) 2017-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_rnea_derivatives_hpp__
-#define __pinocchio_rnea_derivatives_hpp__
+#ifndef __pinocchio_rnea_derivatives_faster_hpp__
+#define __pinocchio_rnea_derivatives_faster_hpp__
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
@@ -12,57 +12,6 @@
 
 namespace pinocchio
 {
-
-  ///
-  /// \brief Computes the partial derivative of the generalized gravity contribution
-  ///        with respect to the joint configuration.
-  ///
-  /// \tparam JointCollection Collection of Joint types.
-  /// \tparam ConfigVectorType Type of the joint configuration vector.
-  /// \tparam ReturnMatrixType Type of the matrix containing the partial derivative of the gravity vector with respect to the joint configuration vector.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] q The joint configuration vector (dim model.nq).
-  /// \param[out] gravity_partial_dq Partial derivative of the generalized gravity vector with respect to the joint configuration.
-  ///
-  /// \remarks gravity_partial_dq must be first initialized with zeros (gravity_partial_dq.setZero).
-  ///
-  /// \sa pinocchio::computeGeneralizedGravity
-  ///
-  template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename ReturnMatrixType>
-  inline void
-  computeGeneralizedGravityDerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
-                                       DataTpl<Scalar,Options,JointCollectionTpl> & data,
-                                       const Eigen::MatrixBase<ConfigVectorType> & q,
-                                       const Eigen::MatrixBase<ReturnMatrixType> & gravity_partial_dq);
-
-  ///
-  /// \brief Computes the partial derivative of the generalized gravity and external forces contributions (a.k.a static torque vector)
-  ///        with respect to the joint configuration.
-  ///
-  /// \tparam JointCollection Collection of Joint types.
-  /// \tparam ConfigVectorType Type of the joint configuration vector.
-  /// \tparam ReturnMatrixType Type of the matrix containing the partial derivative of the gravity vector with respect to the joint configuration vector.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] q The joint configuration vector (dim model.nq).
-  /// \param[in] fext External forces expressed in the local frame of the joints (dim model.njoints).
-  /// \param[out] static_torque_partial_dq Partial derivative of the static torque vector with respect to the joint configuration.
-  ///
-  /// \remarks gravity_partial_dq must be first initialized with zeros (gravity_partial_dq.setZero).
-  ///
-  /// \sa pinocchio::computeGeneralizedTorque
-  ///
-  template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename ReturnMatrixType>
-  inline void
-  computeStaticTorqueDerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
-                                 DataTpl<Scalar,Options,JointCollectionTpl> & data,
-                                 const Eigen::MatrixBase<ConfigVectorType> & q,
-                                 const container::aligned_vector< ForceTpl<Scalar,Options> > & fext,
-                                 const Eigen::MatrixBase<ReturnMatrixType> & static_torque_partial_dq);
-  
   ///
   /// \brief Computes the partial derivatives of the Recursive Newton Euler Algorithms
   ///        with respect to the joint configuration, the joint velocity and the joint acceleration.
@@ -92,7 +41,7 @@ namespace pinocchio
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2,
   typename MatrixType1, typename MatrixType2, typename MatrixType3>
   inline void
-  computeRNEADerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
+  computeRNEADerivativesFaster(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
                          DataTpl<Scalar,Options,JointCollectionTpl> & data,
                          const Eigen::MatrixBase<ConfigVectorType> & q,
                          const Eigen::MatrixBase<TangentVectorType1> & v,
@@ -131,7 +80,7 @@ namespace pinocchio
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2,
   typename MatrixType1, typename MatrixType2, typename MatrixType3>
   inline void
-  computeRNEADerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
+  computeRNEADerivativesFaster(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
                          DataTpl<Scalar,Options,JointCollectionTpl> & data,
                          const Eigen::MatrixBase<ConfigVectorType> & q,
                          const Eigen::MatrixBase<TangentVectorType1> & v,
@@ -164,13 +113,13 @@ namespace pinocchio
   ///
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2>
   inline void
-  computeRNEADerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
+  computeRNEADerivativesFaster(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
                          DataTpl<Scalar,Options,JointCollectionTpl> & data,
                          const Eigen::MatrixBase<ConfigVectorType> & q,
                          const Eigen::MatrixBase<TangentVectorType1> & v,
                          const Eigen::MatrixBase<TangentVectorType2> & a)
   {
-    computeRNEADerivatives(model,data,q.derived(),v.derived(),a.derived(),
+    computeRNEADerivativesFaster(model,data,q.derived(),v.derived(),a.derived(),
                            data.dtau_dq, data.dtau_dv, data.M);
   }
   
@@ -198,14 +147,14 @@ namespace pinocchio
   ///
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2>
   inline void
-  computeRNEADerivatives(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
+  computeRNEADerivativesFaster(const ModelTpl<Scalar,Options,JointCollectionTpl> & model,
                          DataTpl<Scalar,Options,JointCollectionTpl> & data,
                          const Eigen::MatrixBase<ConfigVectorType> & q,
                          const Eigen::MatrixBase<TangentVectorType1> & v,
                          const Eigen::MatrixBase<TangentVectorType2> & a,
                          const container::aligned_vector< ForceTpl<Scalar,Options> > & fext)
   {
-    computeRNEADerivatives(model,data,q.derived(),v.derived(),a.derived(),fext,
+    computeRNEADerivativesFaster(model,data,q.derived(),v.derived(),a.derived(),fext,
                            data.dtau_dq, data.dtau_dv, data.M);
   }
 
@@ -213,6 +162,7 @@ namespace pinocchio
 } // namespace pinocchio 
 
 
-#include "pinocchio/algorithm/rnea-derivatives.hxx"
+
+#include "pinocchio/algorithm/rnea-derivatives-faster.hxx"
 
 #endif // ifndef __pinocchio_rnea_derivatives_hpp__

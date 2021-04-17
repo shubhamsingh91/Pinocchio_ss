@@ -258,16 +258,16 @@ LIST(APPEND HEADERS
 ADD_SUBDIRECTORY(src)
 
 # --- BINDINGS -----------------------------------------------------------------
-ADD_SUBDIRECTORY(bindings)
+# ADD_SUBDIRECTORY(bindings)
 
 # --- EXECUTABLES --------------------------------------------------------------
 ADD_SUBDIRECTORY(utils)
 
 # --- UNIT TESTS ---------------------------------------------------------------
-ADD_SUBDIRECTORY(unittest)
+# ADD_SUBDIRECTORY(unittest)
 
 # --- CHECK EXAMPLES -----------------------------------------------------------
-ADD_SUBDIRECTORY(examples)
+# ADD_SUBDIRECTORY(examples)
 
 # --- BENCHMARKS ---------------------------------------------------------------
 ADD_SUBDIRECTORY(benchmark)

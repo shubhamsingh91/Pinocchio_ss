@@ -100,6 +100,10 @@ namespace pinocchio
     
     /// \brief Vector of joint velocities expressed at the centers of the joints.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) v;
+
+    /// \brief Vector of joint velocities expressed at the centers of the joints.
+    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) vJ;
+
     
     /// \brief Vector of joint velocities expressed at the origin.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) ov;
@@ -143,7 +147,10 @@ namespace pinocchio
     /// \brief Vector of sub-tree composite rigid body inertias, i.e. the apparent inertia of the subtree supported by the joint
     ///        and expressed in the local frame of the joint..
     PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) Ycrb;
-    
+
+    /// \brief Vector of sub-tree composite coriolis terms
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Bcrb;
+
     /// \brief Vector of sub-tree composite rigid body inertia time derivatives \f$ \dot{Y}_{crb}\f$. See Data::Ycrb for more details.
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) dYcrb; // TODO: change with dense symmetric matrix6
     
@@ -279,7 +286,19 @@ namespace pinocchio
     
     /// \brief Derivative of the Jacobian with respect to the time.
     Matrix6x dJ;
-    
+
+    /// \brief Second derivative of the Jacobian with respect to the time.
+    Matrix6x ddJ;
+
+    /// \brief Other term needed for derivatives
+    Matrix6x vdJ;
+
+    /// \brief 
+    Matrix6x pmw_tmp1;
+    Matrix6x pmw_tmp2;
+    Matrix6x pmw_tmp3;
+    Matrix6x pmw_tmp4;
+
     /// \brief Variation of the spatial velocity set with respect to the joint configuration.
     Matrix6x dVdq;
     
