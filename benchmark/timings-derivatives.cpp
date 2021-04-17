@@ -93,12 +93,29 @@ int main(int argc, const char ** argv)
   std::cout << "RNEA derivativeF= \t\t"; timer.toc(std::cout,NBT);
 
   eq = drnea_dq - drnea2_dq;
+  std::cout << eq.topRows(6).squaredNorm() << std::endl;
   std::cout << eq.squaredNorm() << std::endl;
+
+  double upErr= 0;
+  double downErr = 0;
+  for (int ii = 0 ; ii < model.nv ; ii+=1)
+  {
+    for(int jj = 0 ; jj <= ii ; jj+=1)
+    {
+      upErr+=eq(ii,jj)*eq(ii,jj);
+      downErr+=eq(jj,ii)*eq(jj,ii);
+
+    }
+  }
+
+  std::cout <<"up " << upErr << std::endl;
+  std::cout <<"down " << downErr << std::endl;
+   
 
   ev = drnea_dv - drnea2_dv;
 
+  std::cout << ev.topRows(6).squaredNorm() << std::endl;
   std::cout << ev.squaredNorm() << std::endl;
-
 
 
 

@@ -42,24 +42,26 @@ namespace pinocchio
 
       const JointIndex & i = jmodel.id();
       const JointIndex & parent = model.parents[i];
+      Motion & ov = data.ov[i];
+      Motion & oa = data.oa[i];
+      Motion & vJ = data.vJ[i];
       
+
       jmodel.calc(jdata.derived(),q.derived(),v.derived());
       
       data.liMi[i] = model.jointPlacements[i]*jdata.M();
-      
-      //data.v[i] = jdata.v();
-      
+
       if(parent > 0)
       {
         data.oMi[i] = data.oMi[parent] * data.liMi[i];
-        data.ov[i] = data.ov[parent];
-        data.oa[i] = data.oa[parent];
+        ov = data.ov[parent];
+        oa = data.oa[parent];
       }
       else
       {
         data.oMi[i] = data.liMi[i];
-        data.ov[i].setZero();
-        data.oa[i] = -model.gravity;
+        ov.setZero();
+        oa = -model.gravity;
       }
   
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
@@ -68,32 +70,35 @@ namespace pinocchio
       ColsBlock ddJ_cols = jmodel.jointCols(data.ddJ);
       ColsBlock vdJ_cols = jmodel.jointCols(data.vdJ);
 
-
+      // J and vJ
       J_cols = data.oMi[i].act(jdata.S());
-      data.vJ[i] = data.oMi[i].act( jdata.v() );
+      vJ     = data.oMi[i].act( jdata.v() );
 
+      // dJ
+      motionSet::motionAction( ov , J_cols, dJ_cols );
 
-      motionSet::motionAction(data.ov[i],J_cols,dJ_cols);
+      // ddJ
+      motionSet::motionAction( oa , J_cols, ddJ_cols);
+      motionSet::motionAction<ADDTO>( ov , dJ_cols,ddJ_cols);
 
-      motionSet::motionAction(data.oa[i],J_cols,ddJ_cols);
-      motionSet::motionAction<ADDTO>(data.ov[i],dJ_cols,ddJ_cols);
+      // vdJ
+      motionSet::motionAction( vJ ,J_cols, vdJ_cols );
+      vdJ_cols.noalias() += 2*dJ_cols;
 
-      motionSet::motionAction(data.vJ[i] ,J_cols, vdJ_cols );
+      // velocity and accelaration finishing
+      ov += vJ;
+      oa += ov ^ vJ + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
-      data.ov[i] += data.vJ[i];
-      data.oa[i] = data.ov[i] ^ data.vJ[i];
-      data.oa[i]+= data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
-
+      // Composite rigid body inertia
       data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
       
-      data.oh[i] = data.oYcrb[i] * data.ov[i];
-      data.of[i] = data.oYcrb[i] * data.oa[i] + data.ov[i].cross(data.oh[i]);
+      // Momentum and force
+      data.oh[i] = data.oYcrb[i] * ov;
+      data.of[i] = data.oYcrb[i] * oa + ov.cross(data.oh[i]);
 
-      // Coriolis matrix
+      // Coriolis matrix: TODO: replace with Coriolis matrix object
       data.Bcrb[i] = data.oYcrb[i].variation(data.ov[i]);      
       addForceCrossMatrix(data.oh[i],data.Bcrb[i]);
-      //data.Bcrb[i].setRandom();
-
     }
     
     template<typename ForceDerived, typename M6>
@@ -153,32 +158,32 @@ namespace pinocchio
       //MatrixType3 & rnea_partial_da_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType3,rnea_partial_da);
 
       // now tmp2 is set
-      tmp1 = 2*dJ_cols;
-      motionSet::motionAction<ADDTO>(data.vJ[i] ,J_cols, tmp1);
-
-      tmp2= data.Bcrb[i]*J_cols;
-      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],tmp1,tmp2);
-
-      tmp3 = data.Bcrb[i]*dJ_cols;
-      motionSet::act<ADDTO>(J_cols,data.of[i],tmp3);
-      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],ddJ_cols,tmp3);
-
-      tmp4 = data.Bcrb[i].transpose()*J_cols;
-
       motionSet::inertiaAction(data.oYcrb[i],J_cols,tmp1);
+
+
+      tmp2.noalias() = data.Bcrb[i]*J_cols; // TODO: Replace with Coriolis action
+      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],vdJ_cols,tmp2);
+
+      tmp3.noalias() = data.Bcrb[i]*dJ_cols; // TODO:: replace with Coriolis action
+      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],ddJ_cols,tmp3);
+      motionSet::act<ADDTO>(J_cols,data.of[i],tmp3);
+
+      // TDODO:: replace with Matri3x and transpose coriolis action
+      tmp4.noalias() = data.Bcrb[i].transpose()*J_cols;  
+
     
-      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i])
+      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
         = J_cols.transpose()*data.pmw_tmp3.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
-      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv())
+      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
         = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*ddJ_cols 
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*dJ_cols;
 
-      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i])
+      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
         = J_cols.transpose()*data.pmw_tmp2.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
-      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv())
-        = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*(2*dJ_cols + vdJ_cols)
+      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
+        = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*vdJ_cols
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*J_cols;
       
       if(parent>0)
