@@ -53,22 +53,14 @@ namespace pinocchio
       {
         data.oMi[i] = data.oMi[parent] * data.liMi[i];
         data.ov[i] = data.ov[parent];
+        data.oa[i] = data.oa[parent];
       }
       else
       {
         data.oMi[i] = data.liMi[i];
         data.ov[i].setZero();
-      }
-      
-      if(parent > 0)
-      {
-        data.oa[i] = data.oa[parent];
-      }
-      else
-      {
         data.oa[i] = -model.gravity;
       }
-
   
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
       ColsBlock J_cols = jmodel.jointCols(data.J);
@@ -82,16 +74,18 @@ namespace pinocchio
 
 
       motionSet::motionAction(data.ov[i],J_cols,dJ_cols);
-      motionSet::motionAction(data.oa[i],J_cols,vdJ_cols);
-      motionSet::motionAction(data.ov[i],dJ_cols,ddJ_cols);
-      ddJ_cols += vdJ_cols;
+
+      motionSet::motionAction(data.oa[i],J_cols,ddJ_cols);
+      motionSet::motionAction<ADDTO>(data.ov[i],dJ_cols,ddJ_cols);
+
       motionSet::motionAction(data.vJ[i] ,J_cols, vdJ_cols );
 
       data.ov[i] += data.vJ[i];
       data.oa[i] = data.ov[i] ^ data.vJ[i];
       data.oa[i]+= data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
-      data.oYcrb[i] = data.oinertias[i] = data.oMi[i].act(model.inertias[i]);
+      data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
+      
       data.oh[i] = data.oYcrb[i] * data.ov[i];
       data.of[i] = data.oYcrb[i] * data.oa[i] + data.ov[i].cross(data.oh[i]);
 
@@ -165,15 +159,11 @@ namespace pinocchio
       tmp2= data.Bcrb[i]*J_cols;
       motionSet::inertiaAction<ADDTO>(data.oYcrb[i],tmp1,tmp2);
 
-      data.doYcrb[i].setZero();
-
-      addForceCrossMatrix(data.of[i], data.doYcrb[i]);
-
-      tmp3 = data.Bcrb[i]*dJ_cols + data.doYcrb[i]*J_cols; // missing term here
+      tmp3 = data.Bcrb[i]*dJ_cols;
+      motionSet::act<ADDTO>(J_cols,data.of[i],tmp3);
       motionSet::inertiaAction<ADDTO>(data.oYcrb[i],ddJ_cols,tmp3);
 
       tmp4 = data.Bcrb[i].transpose()*J_cols;
-      //tmp4.bottomRows<3>.setZero();
 
       motionSet::inertiaAction(data.oYcrb[i],J_cols,tmp1);
     
@@ -236,7 +226,6 @@ namespace pinocchio
     typedef ModelTpl<Scalar,Options,JointCollectionTpl> Model;
     typedef typename Model::JointIndex JointIndex;
     
-    data.oa_gf[0] = -model.gravity;
     
     typedef ComputeRNEADerivativesFasterForwardStep<Scalar,Options,JointCollectionTpl,ConfigVectorType,TangentVectorType1,TangentVectorType2> Pass1;
     for(JointIndex i=1; i<(JointIndex) model.njoints; ++i)
@@ -284,7 +273,6 @@ namespace pinocchio
     typedef ModelTpl<Scalar,Options,JointCollectionTpl> Model;
     typedef typename Model::JointIndex JointIndex;
     
-    data.oa_gf[0] = -model.gravity;
     
     typedef ComputeRNEADerivativesFasterForwardStep<Scalar,Options,JointCollectionTpl,ConfigVectorType,TangentVectorType1,TangentVectorType2> Pass1;
     for(JointIndex i=1; i<(JointIndex) model.njoints; ++i)
