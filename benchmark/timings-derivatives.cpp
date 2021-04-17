@@ -22,7 +22,7 @@ int main(int argc, const char ** argv)
 
   PinocchioTicToc timer(PinocchioTicToc::US);
   #ifdef NDEBUG
-  const int NBT = 100;
+  const int NBT = 10000;
   #else
     const int NBT = 1;
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
@@ -110,7 +110,7 @@ int main(int argc, const char ** argv)
 
   std::cout <<"up " << upErr << std::endl;
   std::cout <<"down " << downErr << std::endl;
-   
+
 
   ev = drnea_dv - drnea2_dv;
 

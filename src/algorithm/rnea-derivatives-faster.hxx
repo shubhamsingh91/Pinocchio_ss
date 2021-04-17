@@ -106,13 +106,20 @@ namespace pinocchio
 
       // This could probably be put into a class for future use.
       const Matrix3 Ibar = (oY.inertia() - AlphaSkewSquare(oY.mass(),oY.lever())).matrix();
-      const Matrix3 wcross = skew(ov.angular());
-      Matrix3 Bang, Blin;
+      //const Matrix3 wcross = skew(ov.angular());
+      Matrix3 Bang, Blin, tmp;
+
+      cross( ov.angular() , Ibar, tmp);
       Vector3 hw = Ibar*ov.angular();
-      Bang = wcross*Ibar - Ibar*wcross;
+      Bang = tmp + tmp.transpose();
+
       addSkew(-hw , Bang);
-      Bang -= 2*oY.mass()*skew(oY.lever())*skew(ov.linear());
+      const Vector3 mc2 = 2*oY.mass()*oY.lever();
+      cross( mc2,skew(ov.linear()), tmp );
+
+      Bang -= tmp;
       Blin = skew(- 2*data.oh[i].linear() );
+      
       data.Bcrb[i].template topRightCorner<3,3>() = Blin;
       data.Bcrb[i].template bottomRightCorner<3,3>() = Bang;
       data.Bcrb[i].template leftCols<3>().setZero(); // There is an untapped opportunity to exploit the sparsity here.     
