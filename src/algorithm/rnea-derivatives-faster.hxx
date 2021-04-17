@@ -8,6 +8,7 @@
 #include "pinocchio/multibody/visitor.hpp"
 #include "pinocchio/algorithm/check.hpp"
 
+#include <iostream>
 
 namespace pinocchio
 {
@@ -91,14 +92,24 @@ namespace pinocchio
       data.oa[i]+= data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
       data.oYcrb[i] = data.oinertias[i] = data.oMi[i].act(model.inertias[i]);
-      data.Bcrb[i].rightCols<3>.setZero();
-      data.Bcrb[i].leftCols<3>.setRandom();
-      //data.Bcrb[i].block<0,0,3,3> = 
-      //data.Bcrb[i].block<3,0,3,3> = 
-
       data.oh[i] = data.oYcrb[i] * data.ov[i];
       data.of[i] = data.oYcrb[i] * data.oa[i] + data.ov[i].cross(data.oh[i]);
 
+      // Coriolis matrix
+      data.Bcrb[i] = data.oYcrb[i].variation(data.ov[i]);      
+      addForceCrossMatrix(data.oh[i],data.Bcrb[i]);
+      //data.Bcrb[i].setRandom();
+
+    }
+    
+    template<typename ForceDerived, typename M6>
+    static void addForceCrossMatrix(const ForceDense<ForceDerived> & f,
+                                    const Eigen::MatrixBase<M6> & mout)
+    {
+      M6 & mout_ = PINOCCHIO_EIGEN_CONST_CAST(M6,mout);
+      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::LINEAR,ForceDerived::ANGULAR));
+      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::LINEAR));
+      addSkew(-f.angular(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::ANGULAR));
     }
 
   };
@@ -151,13 +162,17 @@ namespace pinocchio
       tmp1 = 2*dJ_cols;
       motionSet::motionAction<ADDTO>(data.vJ[i] ,J_cols, tmp1);
 
-      tmp2= 2*data.Bcrb[i]*J_cols;
+      tmp2= data.Bcrb[i]*J_cols;
       motionSet::inertiaAction<ADDTO>(data.oYcrb[i],tmp1,tmp2);
 
-      tmp3 = 2*data.Bcrb[i]*dJ_cols; // missing term here
+      data.doYcrb[i].setZero();
+
+      addForceCrossMatrix(data.of[i], data.doYcrb[i]);
+
+      tmp3 = data.Bcrb[i]*dJ_cols + data.doYcrb[i]*J_cols; // missing term here
       motionSet::inertiaAction<ADDTO>(data.oYcrb[i],ddJ_cols,tmp3);
 
-      tmp4 = 2*data.Bcrb[i].transpose()*J_cols;
+      tmp4 = data.Bcrb[i].transpose()*J_cols;
       //tmp4.bottomRows<3>.setZero();
 
       motionSet::inertiaAction(data.oYcrb[i],J_cols,tmp1);
@@ -172,7 +187,6 @@ namespace pinocchio
       rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i])
         = J_cols.transpose()*data.pmw_tmp2.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
-
       rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv())
         = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*(2*dJ_cols + vdJ_cols)
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*J_cols;
@@ -180,9 +194,19 @@ namespace pinocchio
       if(parent>0)
       {
         data.oYcrb[parent] += data.oYcrb[i];
-        data.Bcrb.leftCols<3>[parent] += data.Bcrb.leftCols<3>[i];
+        data.Bcrb[parent]  += data.Bcrb[i];
         data.of[parent] += data.of[i];
       }
+    }
+
+    template<typename ForceDerived, typename M6>
+    static void addForceCrossMatrix(const ForceDense<ForceDerived> & f,
+                                    const Eigen::MatrixBase<M6> & mout)
+    {
+      M6 & mout_ = PINOCCHIO_EIGEN_CONST_CAST(M6,mout);
+      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::LINEAR,ForceDerived::ANGULAR));
+      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::LINEAR));
+      addSkew(-f.angular(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::ANGULAR));
     }
   };
   

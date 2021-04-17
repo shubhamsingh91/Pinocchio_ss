@@ -24,7 +24,7 @@ int main(int argc, const char ** argv)
   #ifdef NDEBUG
   const int NBT = 100;
   #else
-    const int NBT = 100;
+    const int NBT = 1;
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
   #endif
     
@@ -72,8 +72,8 @@ int main(int argc, const char ** argv)
   PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXd) drnea_dv(MatrixXd::Zero(model.nv,model.nv));
   MatrixXd drnea_da(MatrixXd::Zero(model.nv,model.nv));
  
-  MatrixXd daba_dq(MatrixXd::Zero(model.nv,model.nv));
-  MatrixXd daba_dv(MatrixXd::Zero(model.nv,model.nv));
+  MatrixXd drnea2_dq(MatrixXd::Zero(model.nv,model.nv)), eq(MatrixXd::Zero(model.nv,model.nv));
+  MatrixXd drnea2_dv(MatrixXd::Zero(model.nv,model.nv)), ev(MatrixXd::Zero(model.nv,model.nv));
   Data::RowMatrixXs daba_dtau(Data::RowMatrixXs::Zero(model.nv,model.nv));
   
   timer.tic();
@@ -88,9 +88,18 @@ int main(int argc, const char ** argv)
   SMOOTH(NBT)
   {
     computeRNEADerivativesFaster(model,data,qs[_smooth],qdots[_smooth],qddots[_smooth],
-                           drnea_dq,drnea_dv,drnea_da);
+                           drnea2_dq,drnea2_dv,drnea_da);
   }
   std::cout << "RNEA derivativeF= \t\t"; timer.toc(std::cout,NBT);
+
+  eq = drnea_dq - drnea2_dq;
+  std::cout << eq.squaredNorm() << std::endl;
+
+  ev = drnea_dv - drnea2_dv;
+
+  std::cout << ev.squaredNorm() << std::endl;
+
+
 
 
   std::cout << "--" << std::endl;
