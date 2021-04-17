@@ -39,12 +39,18 @@ namespace pinocchio
     {
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Motion Motion;
+      typedef typename Data::Matrix6 Matrix6;
+      typedef typename Data::Matrix3 Matrix3;
+      typedef typename Data::Vector3 Vector3;
+      typedef typename Data::Inertia Inertia;
+      typedef typename Symmetric3::AlphaSkewSquare AlphaSkewSquare;
 
       const JointIndex & i = jmodel.id();
       const JointIndex & parent = model.parents[i];
       Motion & ov = data.ov[i];
       Motion & oa = data.oa[i];
       Motion & vJ = data.vJ[i];
+      const Inertia & Y = model.inertias[i];
       
 
       jmodel.calc(jdata.derived(),q.derived(),v.derived());
@@ -90,15 +96,48 @@ namespace pinocchio
       oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
       // Composite rigid body inertia
-      data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
+      data.oYcrb[i] = data.oMi[i].act(Y);
       
+      Matrix6 I = Y.matrix();
+      Matrix3 Ibar = (Y.inertia() - AlphaSkewSquare(Y.mass(),Y.lever())).matrix();
+      Matrix3 wcross;
+      Matrix3 Bang, Blin;
+
+      Vector3 hw = Ibar*ov.angular();
+      skew(ov.angular(),wcross);
+      Bang = wcross*Ibar - Ibar*wcross;
+      addSkew(-hw , Bang);
+      Bang -= 2*Y.mass()*skew(Y.lever())*skew(ov.linear());
+
+      data.oh[i] = Y * ov;
+
+      Blin = skew(- 2*data.oh[i].linear() );
+
+
+
+      std::cout << "v" << std::endl;
+      std::cout << ov << std::endl;
+
+      std::cout << "I" << std::endl;
+      std::cout << I << std::endl;
+      std::cout << Ibar << std::endl;
+
+
       // Momentum and force
-      data.oh[i] = data.oYcrb[i] * ov;
+      
       data.of[i] = data.oYcrb[i] * oa + ov.cross(data.oh[i]);
 
       // Coriolis matrix: TODO: replace with Coriolis matrix object
-      data.Bcrb[i] = data.oYcrb[i].variation(data.ov[i]);      
+
+      data.Bcrb[i] = data.oYcrb[i].variation(data.ov[i]); 
       addForceCrossMatrix(data.oh[i],data.Bcrb[i]);
+
+      std::cout << "B" << std::endl;
+      std::cout << data.Bcrb[i] << std::endl;
+      std::cout << Blin << std::endl;
+      std::cout << Bang << std::endl;     
+
+      
     }
     
     template<typename ForceDerived, typename M6>

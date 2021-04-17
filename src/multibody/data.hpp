@@ -73,6 +73,8 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar,3,Eigen::Dynamic,Options> Matrix3x;
     
     typedef Eigen::Matrix<Scalar,6,6,Options> Matrix6;
+    typedef Eigen::Matrix<Scalar,3,3,Options> Matrix3;
+
     typedef Eigen::Matrix<Scalar,6,6,Eigen::RowMajor | Options> RowMatrix6;
     typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor | Options> RowMatrixXs;
 
