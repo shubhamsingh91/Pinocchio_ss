@@ -91,38 +91,17 @@ namespace pinocchio
       motionSet::motionAction( vJ ,J_cols, vdJ_cols );
       vdJ_cols.noalias() += 2*dJ_cols;
 
-
       // velocity and accelaration finishing
       ov += vJ;
       oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
       // Composite rigid body inertia
-      data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
-      const Inertia & oY =  data.oYcrb[i] ;
+      Inertia & oY =  data.oYcrb[i] ;
 
-
+      oY = data.oMi[i].act(model.inertias[i]);
       data.oh[i] = oY * ov;
       data.of[i] = oY * oa + ov.cross(data.oh[i]);
-
-      // This could probably be put into a class for future use.
-      const Matrix3 Ibar = (oY.inertia() - AlphaSkewSquare(oY.mass(),oY.lever())).matrix();
-      //const Matrix3 wcross = skew(ov.angular());
-      Matrix3 Bang, Blin, tmp;
-
-      cross( ov.angular() , Ibar, tmp);
-      Vector3 hw = Ibar*ov.angular();
-      Bang = tmp + tmp.transpose();
-
-      addSkew(-hw , Bang);
-      const Vector3 mc2 = 2*oY.mass()*oY.lever();
-      cross( mc2,skew(ov.linear()), tmp );
-
-      Bang -= tmp;
-      Blin = skew(- 2*data.oh[i].linear() );
-      
-      data.Bcrb[i].template topRightCorner<3,3>() = Blin;
-      data.Bcrb[i].template bottomRightCorner<3,3>() = Bang;
-      data.Bcrb[i].template leftCols<3>().setZero(); // There is an untapped opportunity to exploit the sparsity here.     
+      data.oBcrb[i] = Coriolis(oY, ov );
     }
   };
   
@@ -165,26 +144,26 @@ namespace pinocchio
       ColsBlock tmp3 = jmodel.jointCols(data.pmw_tmp3);
       ColsBlock tmp4 = jmodel.jointCols(data.pmw_tmp4);
 
+      Inertia & oYcrb = data.oYcrb[i];
+      Coriolis& oBcrb = data.oBcrb[i];
+
       
       MatrixType1 & rnea_partial_dq_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType1,rnea_partial_dq);
       MatrixType2 & rnea_partial_dv_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType2,rnea_partial_dv);
-      //MatrixType3 & rnea_partial_da_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType3,rnea_partial_da);
+      MatrixType3 & rnea_partial_da_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType3,rnea_partial_da);
 
       // now tmp2 is set
-      motionSet::inertiaAction(data.oYcrb[i],J_cols,tmp1);
+      motionSet::inertiaAction(oYcrb,J_cols,tmp1);
 
+      motionSet::coriolisAction(oBcrb,J_cols,tmp2);
+      motionSet::inertiaAction<ADDTO>(oYcrb,vdJ_cols,tmp2);
 
-      tmp2.noalias() = data.Bcrb[i]*J_cols; // TODO: Replace with Coriolis action
-      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],vdJ_cols,tmp2);
-
-      tmp3.noalias() = data.Bcrb[i]*dJ_cols; // TODO:: replace with Coriolis action
-      motionSet::inertiaAction<ADDTO>(data.oYcrb[i],ddJ_cols,tmp3);
+      motionSet::coriolisAction(oBcrb,dJ_cols,tmp3);
+      motionSet::inertiaAction<ADDTO>(oYcrb,ddJ_cols,tmp3);
       motionSet::act<ADDTO>(J_cols,data.of[i],tmp3);
 
-      // TDODO:: replace with Matri3x and transpose coriolis action
-      tmp4.noalias() = data.Bcrb[i].transpose()*J_cols;  
+      motionSet::coriolisTransposeAction(oBcrb,J_cols,tmp4);
 
-    
       rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
         = J_cols.transpose()*data.pmw_tmp3.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
@@ -199,22 +178,16 @@ namespace pinocchio
         = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*vdJ_cols
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*J_cols;
       
+      rnea_partial_da_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias() =
+        J_cols.transpose()*data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
+
+
       if(parent>0)
       {
         data.oYcrb[parent] += data.oYcrb[i];
-        data.Bcrb[parent]  += data.Bcrb[i];
+        data.oBcrb[parent] += data.oBcrb[i];
         data.of[parent] += data.of[i];
       }
-    }
-
-    template<typename ForceDerived, typename M6>
-    static void addForceCrossMatrix(const ForceDense<ForceDerived> & f,
-                                    const Eigen::MatrixBase<M6> & mout)
-    {
-      M6 & mout_ = PINOCCHIO_EIGEN_CONST_CAST(M6,mout);
-      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::LINEAR,ForceDerived::ANGULAR));
-      addSkew(-f.linear(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::LINEAR));
-      addSkew(-f.angular(),mout_.template block<3,3>(ForceDerived::ANGULAR,ForceDerived::ANGULAR));
     }
   };
   

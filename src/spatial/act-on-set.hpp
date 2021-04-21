@@ -107,6 +107,34 @@ namespace pinocchio
                              const Eigen::MatrixBase<Mat> & iF,
                              Eigen::MatrixBase<MatRet> const & jF);
     
+
+    ///
+    /// \brief Action of an Inertia matrix on a set of motions, represented by a 6xN matrix whose
+    ///        columns represent a spatial motion.
+    ///
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iF,
+                              Eigen::MatrixBase<MatRet> const & jF);
+    
+    /// \brief Default implementation with assignment operator=
+    template<typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iF,
+                              Eigen::MatrixBase<MatRet> const & jF);
+
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisTransposeAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iF,
+                              Eigen::MatrixBase<MatRet> const & jF);
+    
+    /// \brief Default implementation with assignment operator=
+    template<typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisTransposeAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iF,
+                              Eigen::MatrixBase<MatRet> const & jF);
+
+
     ///
     /// \brief Action of an Inertia matrix on a set of motions, represented by a 6xN matrix whose
     ///        columns represent a spatial motion.

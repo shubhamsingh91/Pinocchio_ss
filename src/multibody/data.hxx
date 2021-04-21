@@ -40,7 +40,7 @@ namespace pinocchio
   , dYcrb((std::size_t)model.njoints,Inertia::Zero())
   // new stuff
   , vJ((std::size_t)model.njoints,Motion::Zero())
-  , Bcrb((std::size_t)model.njoints,Inertia::Zero())
+  , oBcrb((std::size_t)model.njoints,Coriolis::Zero())
   // end new stuff
   , M(MatrixXs::Zero(model.nv,model.nv))
   , Minv(MatrixXs::Zero(model.nv,model.nv))

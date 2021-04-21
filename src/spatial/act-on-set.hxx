@@ -456,6 +456,125 @@ namespace pinocchio
         motionSet::se3ActionInverse<Op>(m,iV.col(col),jVc);
       }
     }
+
+
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet, int NCOLS>
+    struct MotionSetCoriolisAction
+    {
+      /* Compute dV = v ^ V, where  is the action operation associated
+       * with v, and V, dV are matrices whose columns are motions. */
+      static void run(const CoriolisTpl<Scalar,Options> & B,
+                      const Eigen::MatrixBase<Mat> & iV,
+                      Eigen::MatrixBase<MatRet> const & jV);
+      
+    };
+    
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet, int NCOLS>
+    void MotionSetCoriolisAction<Op,Scalar,Options,Mat,MatRet,NCOLS>::
+    run(const CoriolisTpl<Scalar,Options> & B,
+        const Eigen::MatrixBase<Mat> & iV,
+        Eigen::MatrixBase<MatRet> const & jV)
+    {
+      for(int col=0;col<jV.cols();++col)
+      {
+        typename MatRet::ColXpr jVc
+        = PINOCCHIO_EIGEN_CONST_CAST(MatRet,jV).col(col);
+        motionSet::coriolisAction<Op>(B,iV.col(col),jVc);
+      }
+    }
+    
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    struct MotionSetCoriolisAction<Op,Scalar,Options,Mat,MatRet,1>
+    {
+      static void run(const CoriolisTpl<Scalar,Options> & B,
+                      const Eigen::MatrixBase<Mat> & iV,
+                      Eigen::MatrixBase<MatRet> const & jV)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(Mat);
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(MatRet);
+        
+        typedef MotionRef<const Mat> MotionRefOnMat;
+        typedef ForceRef<MatRet> ForceRefOnMatRet;
+        MotionRefOnMat min(iV.derived());
+        ForceRefOnMatRet fout(PINOCCHIO_EIGEN_CONST_CAST(MatRet,jV));
+       
+        switch(Op)
+        {
+          case SETTO:
+            B.__mult__(min,fout);
+            break;
+          case ADDTO:
+            fout += B*min;
+            break;
+          case RMTO:
+            fout -= B*min;
+            break;
+          default:
+            assert(false && "Wrong Op requesed value");
+            break;
+        }
+      }
+    };
+
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet, int NCOLS>
+    struct MotionSetCoriolisTransposeAction
+    {
+      /* Compute dV = v ^ V, where  is the action operation associated
+       * with v, and V, dV are matrices whose columns are motions. */
+      static void run(const CoriolisTpl<Scalar,Options> & B,
+                      const Eigen::MatrixBase<Mat> & iV,
+                      Eigen::MatrixBase<MatRet> const & jV);
+      
+    };
+    
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet, int NCOLS>
+    void MotionSetCoriolisTransposeAction<Op,Scalar,Options,Mat,MatRet,NCOLS>::
+    run(const CoriolisTpl<Scalar,Options> & B,
+        const Eigen::MatrixBase<Mat> & iV,
+        Eigen::MatrixBase<MatRet> const & jV)
+    {
+      for(int col=0;col<jV.cols();++col)
+      {
+        typename MatRet::ColXpr jVc
+        = PINOCCHIO_EIGEN_CONST_CAST(MatRet,jV).col(col);
+        motionSet::coriolisTransposeAction<Op>(B,iV.col(col),jVc);
+      }
+    }
+    
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    struct MotionSetCoriolisTransposeAction<Op,Scalar,Options,Mat,MatRet,1>
+    {
+      static void run(const CoriolisTpl<Scalar,Options> & B,
+                      const Eigen::MatrixBase<Mat> & iV,
+                      Eigen::MatrixBase<MatRet> const & jV)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(Mat);
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(MatRet);
+        
+        typedef MotionRef<const Mat> MotionRefOnMat;
+        typedef ForceRef<MatRet> ForceRefOnMatRet;
+        MotionRefOnMat min(iV.derived());
+        ForceRefOnMatRet fout(PINOCCHIO_EIGEN_CONST_CAST(MatRet,jV));
+       
+        switch(Op)
+        {
+          case SETTO:
+            B.__transpose_mult__(min,fout);
+            break;
+          case ADDTO:
+            B.__transpose_mult_add__(min,fout);
+            break;
+          case RMTO:
+            B.__transpose_mult_sub__(min,fout);
+            break;
+          default:
+            assert(false && "Wrong Op requesed value");
+            break;
+        }
+      }
+    };
+
+
     
     template<int Op, typename Scalar, int Options, typename Mat, typename MatRet, int NCOLS>
     struct MotionSetInertiaAction
@@ -607,6 +726,40 @@ namespace pinocchio
       internal::MotionSetMotionAction<SETTO,MotionDerived,Mat,MatRet,Mat::ColsAtCompileTime>::run(v,iV,jV);
     }
     
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iV,
+                              Eigen::MatrixBase<MatRet> const & jV)
+    {
+      internal::MotionSetCoriolisAction<Op,Scalar,Options,Mat,MatRet,MatRet::ColsAtCompileTime>::run(B,iV,jV);
+    }
+    
+    template<typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iV,
+                              Eigen::MatrixBase<MatRet> const & jV)
+    {
+      internal::MotionSetCoriolisAction<SETTO,Scalar,Options,Mat,MatRet,MatRet::ColsAtCompileTime>::run(B,iV,jV);
+    }
+
+    template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisTransposeAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iV,
+                              Eigen::MatrixBase<MatRet> const & jV)
+    {
+      internal::MotionSetCoriolisTransposeAction<Op,Scalar,Options,Mat,MatRet,MatRet::ColsAtCompileTime>::run(B,iV,jV);
+    }
+    
+    template<typename Scalar, int Options, typename Mat, typename MatRet>
+    static void coriolisTransposeAction(const CoriolisTpl<Scalar,Options> & B,
+                              const Eigen::MatrixBase<Mat> & iV,
+                              Eigen::MatrixBase<MatRet> const & jV)
+    {
+      internal::MotionSetCoriolisTransposeAction<SETTO,Scalar,Options,Mat,MatRet,MatRet::ColsAtCompileTime>::run(B,iV,jV);
+    }
+
+
+
     template<int Op, typename Scalar, int Options, typename Mat, typename MatRet>
     static void inertiaAction(const InertiaTpl<Scalar,Options> & I,
                               const Eigen::MatrixBase<Mat> & iV,

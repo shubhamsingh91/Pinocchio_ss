@@ -13,6 +13,8 @@
 #include "pinocchio/spatial/force.hpp"
 #include "pinocchio/spatial/motion.hpp"
 #include "pinocchio/spatial/inertia.hpp"
+#include "pinocchio/spatial/spatial-coriolis.hpp"
+
 #include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/multibody/joint/joint-generic.hpp"
 #include "pinocchio/container/aligned-vector.hpp"
@@ -42,6 +44,8 @@ namespace pinocchio
     typedef MotionTpl<Scalar,Options> Motion;
     typedef ForceTpl<Scalar,Options> Force;
     typedef InertiaTpl<Scalar,Options> Inertia;
+    typedef CoriolisTpl<Scalar,Options> Coriolis;
+
     typedef FrameTpl<Scalar,Options> Frame;
     
     typedef pinocchio::Index Index;
@@ -151,7 +155,9 @@ namespace pinocchio
     PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) Ycrb;
 
     /// \brief Vector of sub-tree composite coriolis terms
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Bcrb;
+    PINOCCHIO_ALIGNED_STD_VECTOR(Coriolis) oBcrb;
+
+
 
     /// \brief Vector of sub-tree composite rigid body inertia time derivatives \f$ \dot{Y}_{crb}\f$. See Data::Ycrb for more details.
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) dYcrb; // TODO: change with dense symmetric matrix6

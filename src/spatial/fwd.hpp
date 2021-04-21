@@ -50,6 +50,8 @@ namespace pinocchio
   template<typename Scalar, int Options=0> class ForceTpl;
   
   template<typename Scalar, int Options=0> class InertiaTpl;
+  template<typename Scalar, int Options=0> class CoriolisTpl;
+
   template<typename Scalar, int Options=0> class Symmetric3Tpl;
   
 
@@ -57,6 +59,7 @@ namespace pinocchio
   typedef MotionTpl     <double,0> Motion;
   typedef ForceTpl      <double,0> Force;
   typedef InertiaTpl    <double,0> Inertia;
+  typedef CoriolisTpl    <double,0> Coriolis;
   typedef Symmetric3Tpl <double,0> Symmetric3;
   typedef MotionZeroTpl <double,0> MotionZero;
 
