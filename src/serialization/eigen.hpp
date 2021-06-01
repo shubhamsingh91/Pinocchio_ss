@@ -5,7 +5,7 @@
 #ifndef __pinocchio_serialization_eigen_matrix_hpp__
 #define __pinocchio_serialization_eigen_matrix_hpp__
 
-#include <Eigen/Dense>
+# include <eigen3/Eigen/Dense>
 #include "pinocchio/math/tensor.hpp"
 
 #include <boost/serialization/split_free.hpp>

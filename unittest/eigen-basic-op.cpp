@@ -4,7 +4,7 @@
 
 #include "pinocchio/multibody/model.hpp"
 
-#include <Eigen/Core>
+# include <eigen3/Eigen/Core>
 #include "pinocchio/math/matrix.hpp"
 
 #include <boost/test/unit_test.hpp>

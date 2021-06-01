@@ -8,6 +8,8 @@
 #include "pinocchio/spatial/act-on-set.hpp"
 #include "pinocchio/multibody/visitor.hpp"
 #include "pinocchio/algorithm/check.hpp"
+#include <iostream>
+#include <stdlib.h>
 
 /// @cond DEV
 
@@ -43,13 +45,25 @@ namespace pinocchio
       data.liMi[i] = model.jointPlacements[i] * jdata.M();
       
       data.v[i] = jdata.v();
+
+     // std:: cout << "ABA data here----------------------------------" << std::endl;
+     // std:: cout << "v(i) is" << data.v[i] <<  std::endl;
+
       if (parent>0)
         data.v[i] += data.liMi[i].actInv(data.v[parent]);
 
+     // std::cout << "v(i) after if loop is" << data.v[i] << std::endl;
+
       data.a_gf[i] = jdata.c() + (data.v[i] ^ jdata.v());
       
+     //  std:: cout << "a_gf(i) is" << data.a_gf[i] <<  std::endl;
+  
       data.Yaba[i] = model.inertias[i].matrix();
       data.f[i] = model.inertias[i].vxiv(data.v[i]); // -f_ext
+
+     //  std:: cout << "f(i) is" << data.f[i] <<  std::endl;
+
+
     }
     
   };
@@ -150,6 +164,11 @@ namespace pinocchio
         pa.toVector() += Ia * data.a_gf[i].toVector() + jdata.UDinv() * jmodel.jointVelocitySelector(data.u);
         data.Yaba[parent] += internal::SE3actOn<Scalar>::run(data.liMi[i], Ia);
         data.f[parent] += data.liMi[i].act(pa);
+
+      // std:: cout << "Testing data.f[parent] here" << std::endl;
+      // std:: cout << "f(i) is" << data.f[parent] <<  std::endl;
+
+
       }
     }
     
@@ -177,11 +196,21 @@ namespace pinocchio
       
       const JointIndex & i = jmodel.id();
       const JointIndex & parent = model.parents[i];
+
+  //   std::cout <<"Testing loop 3 here ---------------------" << std:: endl;
       
       data.a_gf[i] += data.liMi[i].actInv(data.a_gf[parent]);
+
+     // std::cout <<"data.a_gf[i] here is " << data.a_gf[i] << std:: endl;
+   
       jmodel.jointVelocitySelector(data.ddq).noalias() =
       jdata.Dinv() * jmodel.jointVelocitySelector(data.u) - jdata.UDinv().transpose() * data.a_gf[i].toVector();
       data.a_gf[i] += jdata.S() * jmodel.jointVelocitySelector(data.ddq);
+
+     // std::cout <<"ddq element in ABA here is " << jmodel.jointVelocitySelector(data.ddq) << std:: endl;
+     
+    //  std::cout <<"ddq vector in ABA here is " << data.ddq << std:: endl;
+  
     }
     
   };

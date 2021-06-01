@@ -6,7 +6,7 @@
 #define __pinocchio_python_utils_eigen_hpp__
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 
 namespace pinocchio
 {

@@ -6,7 +6,7 @@
 #define __pinocchio_container_aligned_vector_hpp__
 
 #include <vector>
-#include <Eigen/StdVector>
+# include <eigen3/Eigen/StdVector>
 
 #define PINOCCHIO_ALIGNED_STD_VECTOR(Type) \
   ::pinocchio::container::aligned_vector<Type>

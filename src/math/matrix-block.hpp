@@ -5,7 +5,7 @@
 #ifndef __pinocchio_math_matrix_block_hpp__
 #define __pinocchio_math_matrix_block_hpp__
 
-#include <Eigen/Core>
+# include <eigen3/Eigen/Core>
 
 namespace pinocchio
 {

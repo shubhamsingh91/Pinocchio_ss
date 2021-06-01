@@ -8,9 +8,9 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/math/matrix.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <Eigen/SVD>
+# include <eigen3/Eigen/Core>
+# include <eigen3/Eigen/Geometry>
+# include <eigen3/Eigen/SVD>
 
 namespace pinocchio
 {

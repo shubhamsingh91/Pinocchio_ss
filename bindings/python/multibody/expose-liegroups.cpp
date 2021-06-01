@@ -6,7 +6,7 @@
 #include "pinocchio/bindings/python/multibody/liegroups.hpp"
 #include "pinocchio/bindings/python/utils/namespace.hpp"
 
-#include <eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
 
 namespace pinocchio
 {

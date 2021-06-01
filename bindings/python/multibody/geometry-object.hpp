@@ -6,8 +6,8 @@
 #define __pinocchio_python_geometry_object_hpp__
 
 #include <boost/python.hpp>
-#include <eigenpy/memory.hpp>
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 
 #include "pinocchio/multibody/geometry.hpp"
 

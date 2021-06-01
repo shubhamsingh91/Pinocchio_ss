@@ -8,7 +8,7 @@
 #include <boost/python.hpp>
 #include <boost/python/scope.hpp>
 
-#include <eigenpy/registration.hpp>
+# include <eigen3/Eigenpy/registration.hpp>
 
 namespace pinocchio
 {

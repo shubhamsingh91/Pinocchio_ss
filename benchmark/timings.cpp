@@ -24,7 +24,7 @@
 
 #include "pinocchio/utils/timer.hpp"
 
-#include <Eigen/StdVector>
+# include <eigen3/Eigen/StdVector>
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::VectorXd)
 
 namespace pinocchio
@@ -181,7 +181,12 @@ int main(int argc, const char ** argv)
     
   pinocchio::Model model;
 
-  std::string filename = PINOCCHIO_MODEL_DIR + std::string("/simple_humanoid.urdf");
+  std::string filename = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/atlas.urdf"; //atlas
+
+  std:: cout << "NBT is" << NBT << std::endl;
+
+// std::string filename = PINOCCHIO_MODEL_DIR + std::string("/simple_humanoid.urdf");
+
   if(argc>1) filename = argv[1];
   
   bool with_ff = true;

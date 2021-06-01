@@ -12,7 +12,7 @@
 #endif
 
 #include <boost/multiprecision/number.hpp>
-#include <Eigen/Dense>
+# include <eigen3/Eigen/Dense>
 
 namespace pinocchio
 {

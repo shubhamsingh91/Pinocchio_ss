@@ -5,7 +5,7 @@
 #ifndef __pinocchio_python_geometry_model_hpp__
 #define __pinocchio_python_geometry_model_hpp__
 
-#include <eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
 
 #include "pinocchio/bindings/python/utils/printable.hpp"
 #include "pinocchio/bindings/python/utils/copyable.hpp"

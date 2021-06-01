@@ -7,7 +7,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 
-#include <eigenpy/exception.hpp>
+# include <eigen3/Eigenpy/exception.hpp>
 
 #include <boost/python.hpp>
 #include <boost/python/type_id.hpp>

@@ -7,7 +7,7 @@
 #define __pinocchio_python_python_hpp__
 
 #include "pinocchio/fwd.hpp"
-#include <eigenpy/eigenpy.hpp>
+# include <eigen3/Eigenpy/eigenpy.hpp>
 
 namespace pinocchio
 {

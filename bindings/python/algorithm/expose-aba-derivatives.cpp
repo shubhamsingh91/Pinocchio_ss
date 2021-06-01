@@ -6,7 +6,7 @@
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/bindings/python/utils/eigen.hpp"
 
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 
 namespace pinocchio
 {

@@ -8,7 +8,7 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/math/fwd.hpp"
 
-#include <Eigen/Core>
+# include <eigen3/Eigen/Core>
 #include <boost/type_traits.hpp>
 
 namespace pinocchio

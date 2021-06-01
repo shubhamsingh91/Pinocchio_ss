@@ -5,7 +5,7 @@
 #include "pinocchio/bindings/python/algorithm/algorithms.hpp"
 #include "pinocchio/algorithm/parallel/rnea.hpp"
 
-#include <eigenpy/eigen-from-python.hpp>
+# include <eigen3/Eigenpy/eigen-from-python.hpp>
 
 namespace pinocchio
 {

@@ -6,7 +6,7 @@
 #define __pinocchio_python_joint_variants_hpp__
 
 #include <boost/python.hpp>
-#include <eigenpy/exception.hpp>
+# include <eigen3/Eigenpy/exception.hpp>
 
 #include "pinocchio/multibody/joint/joint-collection.hpp"
 

@@ -5,7 +5,7 @@
 #ifndef __pinocchio_math_rpy_hxx__
 #define __pinocchio_math_rpy_hxx__
 
-#include <Eigen/Geometry>
+# include <eigen3/Eigen/Geometry>
 
 #include "pinocchio/math/sincos.hpp"
 

@@ -22,7 +22,7 @@
 #include "pinocchio/serialization/serializable.hpp"
 
 #include <iostream>
-#include <Eigen/Cholesky>
+# include <eigen3/Eigen/Cholesky>
 
 namespace pinocchio
 {
@@ -100,7 +100,9 @@ namespace pinocchio
     
     /// \brief Vector of joint accelerations due to the gravity field.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_gf;
-    
+
+    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_gf_v1;
+
     /// \brief Vector of joint accelerations expressed at the origin of the world including gravity contribution.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_gf;
     
@@ -117,7 +119,9 @@ namespace pinocchio
     /// \brief Vector of body forces expressed in the local frame of the joint. For each body, the force represents the sum of
     ///        all external forces acting on the body.
     PINOCCHIO_ALIGNED_STD_VECTOR(Force) f;
-    
+
+    PINOCCHIO_ALIGNED_STD_VECTOR(Force) f_v1;
+
     /// \brief Vector of body forces expressed in the world frame. For each body, the force represents the sum of
     ///        all external forces acting on the body.
     PINOCCHIO_ALIGNED_STD_VECTOR(Force) of;
@@ -167,7 +171,13 @@ namespace pinocchio
     
     /// \brief The inverse of the joint space inertia matrix (a square matrix of dim model.nv).
     RowMatrixXs Minv;
-    
+
+    /// \brief Minv_mat_prod
+    RowMatrixXs Minv_mat_prod;
+
+    /// \brief The joint accelerations computed from ABA_ new
+    TangentVectorType ddq_new;
+
     /// \brief The Coriolis matrix (a square matrix of dim model.nv).
     MatrixXs C;
 
@@ -222,6 +232,9 @@ namespace pinocchio
     /// \brief Inertia matrix of the subtree expressed as dense matrix [ABA]
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Yaba;  // TODO: change with dense symmetric matrix6
     
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Yaba_v1;  // TODO: change with dense symmetric matrix6
+
+
     /// \brief Intermediate quantity corresponding to apparent torque [ABA]
     TangentVectorType u;                  // Joint Inertia
     

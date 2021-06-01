@@ -8,6 +8,7 @@
 #include "pinocchio/multibody/visitor.hpp"
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/aba.hpp"
+#include <iostream>
 
 namespace pinocchio
 {
@@ -392,7 +393,10 @@ namespace pinocchio
     
     Minv_.template triangularView<Eigen::StrictlyLower>()
     = Minv_.transpose().template triangularView<Eigen::StrictlyLower>();
-    
+   
+      //  std::cout << "Minv matrix here in ABA derivatives is" << Minv_ << std::endl;
+      //  std::cout << "dtau_dq here in ABA derivatives is" << data.dtau_dq << std::endl;
+
     PINOCCHIO_EIGEN_CONST_CAST(MatrixType1,aba_partial_dq).noalias() = -Minv_*data.dtau_dq;
     PINOCCHIO_EIGEN_CONST_CAST(MatrixType2,aba_partial_dv).noalias() = -Minv_*data.dtau_dv;
   }
@@ -467,6 +471,8 @@ namespace pinocchio
     
     PINOCCHIO_EIGEN_CONST_CAST(MatrixType1,aba_partial_dq).noalias() = -Minv_*data.dtau_dq;
     PINOCCHIO_EIGEN_CONST_CAST(MatrixType2,aba_partial_dv).noalias() = -Minv_*data.dtau_dv;
+    
+
   }
   
   

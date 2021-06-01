@@ -16,7 +16,7 @@
 #define EIGEN_MATRIXBASE_PLUGIN <pinocchio/autodiff/cppad/math/eigen_plugin.hpp>
 
 #include <cppad/cppad.hpp>
-#include <Eigen/Dense>
+# include <eigen3/Eigen/Dense>
 
 namespace boost
 {

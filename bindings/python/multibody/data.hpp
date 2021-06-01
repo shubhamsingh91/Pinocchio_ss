@@ -10,9 +10,9 @@
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/serialization/data.hpp"
 
-#include <eigenpy/memory.hpp>
-#include <eigenpy/eigen-to-python.hpp>
-#include <eigenpy/exception.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/exception.hpp>
 
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"

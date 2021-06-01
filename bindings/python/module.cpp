@@ -14,10 +14,10 @@
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/serialization/serialization.hpp"
 
-#include <eigenpy/eigenpy.hpp>
+# include <eigen3/Eigenpy/eigenpy.hpp>
 
-#include <Eigen/Geometry>
-#include <eigenpy/geometry.hpp>
+# include <eigen3/Eigen/Geometry>
+# include <eigen3/Eigenpy/geometry.hpp>
 
 namespace bp = boost::python;
 using namespace pinocchio::python;

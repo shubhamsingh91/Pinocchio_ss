@@ -23,10 +23,12 @@ namespace pinocchio
   , a((std::size_t)model.njoints,Motion::Zero())
   , oa((std::size_t)model.njoints,Motion::Zero())
   , a_gf((std::size_t)model.njoints,Motion::Zero())
+  , a_gf_v1((std::size_t)model.njoints,Motion::Zero()) // new variable
   , oa_gf((std::size_t)model.njoints,Motion::Zero())
   , v((std::size_t)model.njoints,Motion::Zero())
   , ov((std::size_t)model.njoints,Motion::Zero())
   , f((std::size_t)model.njoints,Force::Zero())
+  , f_v1((std::size_t)model.njoints,Force::Zero()) //new variable
   , of((std::size_t)model.njoints,Force::Zero())
   , h((std::size_t)model.njoints,Force::Zero())
   , oh((std::size_t)model.njoints,Force::Zero())
@@ -44,6 +46,10 @@ namespace pinocchio
   // end new stuff
   , M(MatrixXs::Zero(model.nv,model.nv))
   , Minv(MatrixXs::Zero(model.nv,model.nv))
+  // new stuff- SS
+  , Minv_mat_prod(MatrixXs::Zero(model.nv,2*model.nv))
+  , ddq_new(VectorXs::Zero(model.nv))
+  // end new stuff
   , C(MatrixXs::Zero(model.nv,model.nv))
   , dHdq(Matrix6x::Zero(6,model.nv))
   , dFdq(Matrix6x::Zero(6,model.nv))
@@ -59,6 +65,7 @@ namespace pinocchio
   , doYcrb((std::size_t)model.njoints,Inertia::Matrix6::Zero())
   , ddq(VectorXs::Zero(model.nv))
   , Yaba((std::size_t)model.njoints,Inertia::Matrix6::Zero())
+  , Yaba_v1((std::size_t)model.njoints,Inertia::Matrix6::Zero()) // new variable
   , u(VectorXs::Zero(model.nv))
   , Ag(Matrix6x::Zero(6,model.nv))
   , dAg(Matrix6x::Zero(6,model.nv))

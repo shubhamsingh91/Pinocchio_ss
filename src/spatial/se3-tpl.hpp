@@ -13,7 +13,7 @@
 #include "pinocchio/math/rotation.hpp"
 #include "pinocchio/spatial/cartesian-axis.hpp"
 
-#include <Eigen/Geometry>
+# include <eigen3/Eigen/Geometry>
 
 namespace pinocchio
 {

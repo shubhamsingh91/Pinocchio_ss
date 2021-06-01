@@ -30,7 +30,11 @@ int main(int argc, const char ** argv)
     
   Model model;
 
-  std::string filename = std::string("/Users/pwensing/Repos/pinnochio2/pinocchio/models/simple_humanoid.urdf");
+  //std::string filename = std::string("/Users/pwensing/Repos/pinnochio2/pinocchio/models/simple_humanoid.urdf");
+  std::string filename = std::string("/home/ss86299/Desktop/test_pinocchio/pinocchio/models/simple_humanoid.urdf");
+
+  std:: cout << "value of argc is" << argc << "\n \n";
+
   if(argc>1) filename = argv[1];
   bool with_ff = true;
   
@@ -40,7 +44,9 @@ int main(int argc, const char ** argv)
     if(ff_option == "-no-ff")
       with_ff = false;
   }
-    
+
+  std:: cout << "value of with_ff is" << with_ff<< "\n \n";
+
   if( filename == "HS") 
     buildModels::humanoidRandom(model,true);
   else

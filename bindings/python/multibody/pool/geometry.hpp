@@ -5,13 +5,13 @@
 #ifndef __pinocchio_python_multibody_pool_geometry_hpp__
 #define __pinocchio_python_multibody_pool_geometry_hpp__
 
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 
 #include "pinocchio/multibody/pool/geometry.hpp"
 
 #include <boost/python/overloads.hpp>
-#include <eigenpy/memory.hpp>
-#include <eigenpy/exception.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/exception.hpp>
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/bindings/python/utils/copyable.hpp"

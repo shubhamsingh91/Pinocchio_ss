@@ -22,7 +22,7 @@
 #include "pinocchio/utils/timer.hpp"
 
 #include <boost/random.hpp>
-#include <Eigen/Geometry>
+# include <eigen3/Eigen/Geometry>
 
 #include "pinocchio/spatial/symmetric3.hpp"
 
@@ -30,7 +30,7 @@
 #include <boost/utility/binary.hpp>
 
 
-#include <Eigen/StdVector>
+# include <eigen3/Eigen/StdVector>
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix3d)
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pinocchio::Symmetric3)
 

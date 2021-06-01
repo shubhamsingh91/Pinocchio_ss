@@ -6,9 +6,9 @@
 #ifndef __pinocchio_python_spatial_inertia_hpp__
 #define __pinocchio_python_spatial_inertia_hpp__
 
-#include <eigenpy/exception.hpp>
-#include <eigenpy/memory.hpp>
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/exception.hpp>
+# include <eigen3/Eigenpy/memory.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 #include <boost/python/tuple.hpp>
 
 #include "pinocchio/spatial/inertia.hpp"

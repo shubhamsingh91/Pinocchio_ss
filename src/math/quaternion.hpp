@@ -16,7 +16,7 @@
 #include "pinocchio/utils/static-if.hpp"
 
 #include <boost/type_traits.hpp>
-#include <Eigen/Geometry>
+# include <eigen3/Eigen/Geometry>
 
 namespace pinocchio
 {

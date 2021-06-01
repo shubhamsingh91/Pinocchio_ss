@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include <Eigen/Core>
+# include <eigen3/Eigen/Core>
 #include <pinocchio/spatial/skew.hpp>
 
 #include <boost/test/unit_test.hpp>

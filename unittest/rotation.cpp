@@ -6,7 +6,7 @@
 
 #include <pinocchio/math/rotation.hpp>
 #include <pinocchio/math/sincos.hpp>
-#include <Eigen/Geometry>
+# include <eigen3/Eigen/Geometry>
 
 #include <boost/variant.hpp> // to avoid C99 warnings
 

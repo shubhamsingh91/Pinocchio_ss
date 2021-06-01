@@ -10,7 +10,7 @@
 #include "pinocchio/multibody/joint/joint-collection.hpp"
 #include "pinocchio/multibody/joint/joint-composite.hpp"
 
-#include <eigenpy/eigen-to-python.hpp>
+# include <eigen3/Eigenpy/eigen-to-python.hpp>
 
 namespace pinocchio
 {

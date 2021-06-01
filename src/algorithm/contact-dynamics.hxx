@@ -10,7 +10,7 @@
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/check.hpp"
 
-#include <Eigen/Cholesky>
+# include <eigen3/Eigen/Cholesky>
 
 namespace pinocchio
 {

@@ -4,9 +4,9 @@
 
 #include <iostream>
 #include "pinocchio/utils/timer.hpp"
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include <Eigen/StdVector>
+# include <eigen3/Eigen/Dense>
+# include <eigen3/Eigen/Geometry>
+# include <eigen3/Eigen/StdVector>
 
 using namespace Eigen;
 
