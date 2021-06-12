@@ -23,7 +23,7 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] q The joint configuration vector (dim model.nq).
   /// \param[in] v The joint velocity vector (dim model.nv).
-  /// \param[in] tau_mat The joint torque vector (dim model.nv,model.nv).
+  /// \param[in] tau_mat The joint torque vector (dim model.nv,2*model.nv).
   ///
   /// \note This also overwrites data.f, possibly leaving it in an inconsistent state
   ///

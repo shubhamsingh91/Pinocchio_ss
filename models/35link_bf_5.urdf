@@ -1,0 +1,1390 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<robot name="35link_bf_5"> 
+ 
+
+ 
+ <link 
+   name="base_link"> 
+     <inertial> 
+     <origin 
+      xyz="0 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="0"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="0" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link1"> 
+     <inertial> 
+     <origin 
+      xyz="0 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link2"> 
+     <inertial> 
+     <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link3"> 
+     <inertial> 
+     <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link4"> 
+     <inertial> 
+     <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link5"> 
+     <inertial> 
+     <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link6"> 
+     <inertial> 
+     <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link7"> 
+     <inertial> 
+     <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link8"> 
+     <inertial> 
+     <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link9"> 
+     <inertial> 
+     <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link10"> 
+     <inertial> 
+     <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link11"> 
+     <inertial> 
+     <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link12"> 
+     <inertial> 
+     <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link13"> 
+     <inertial> 
+     <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link14"> 
+     <inertial> 
+     <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link15"> 
+     <inertial> 
+     <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link16"> 
+     <inertial> 
+     <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link17"> 
+     <inertial> 
+     <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link18"> 
+     <inertial> 
+     <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link19"> 
+     <inertial> 
+     <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link20"> 
+     <inertial> 
+     <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link21"> 
+     <inertial> 
+     <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link22"> 
+     <inertial> 
+     <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link23"> 
+     <inertial> 
+     <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link24"> 
+     <inertial> 
+     <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link25"> 
+     <inertial> 
+     <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link26"> 
+     <inertial> 
+     <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link27"> 
+     <inertial> 
+     <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link28"> 
+     <inertial> 
+     <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link29"> 
+     <inertial> 
+     <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link30"> 
+     <inertial> 
+     <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link31"> 
+     <inertial> 
+     <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link32"> 
+     <inertial> 
+     <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link33"> 
+     <inertial> 
+     <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link34"> 
+     <inertial> 
+     <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <link 
+   name="link35"> 
+     <inertial> 
+     <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <mass 
+     value="1.5"/> 
+    <inertia
+       ixx="0"
+       ixy="0"
+       ixz="0"
+       iyy="0"
+       iyz="0"
+       izz="1" />
+     </inertial>
+ </link>
+ 
+ <joint 
+   name="joint1" 
+   type="revolute"> 
+    <origin 
+      xyz="0 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="base_link"/> 
+    <child 
+     link="link1"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint2" 
+   type="revolute"> 
+    <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link1"/> 
+    <child 
+     link="link2"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint3" 
+   type="revolute"> 
+    <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link1"/> 
+    <child 
+     link="link3"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint4" 
+   type="revolute"> 
+    <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link1"/> 
+    <child 
+     link="link4"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint5" 
+   type="revolute"> 
+    <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link1"/> 
+    <child 
+     link="link5"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint6" 
+   type="revolute"> 
+    <origin 
+      xyz="1 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link1"/> 
+    <child 
+     link="link6"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint7" 
+   type="revolute"> 
+    <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link2"/> 
+    <child 
+     link="link7"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint8" 
+   type="revolute"> 
+    <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link2"/> 
+    <child 
+     link="link8"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint9" 
+   type="revolute"> 
+    <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link2"/> 
+    <child 
+     link="link9"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint10" 
+   type="revolute"> 
+    <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link2"/> 
+    <child 
+     link="link10"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint11" 
+   type="revolute"> 
+    <origin 
+      xyz="2 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link2"/> 
+    <child 
+     link="link11"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint12" 
+   type="revolute"> 
+    <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link3"/> 
+    <child 
+     link="link12"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint13" 
+   type="revolute"> 
+    <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link3"/> 
+    <child 
+     link="link13"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint14" 
+   type="revolute"> 
+    <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link3"/> 
+    <child 
+     link="link14"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint15" 
+   type="revolute"> 
+    <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link3"/> 
+    <child 
+     link="link15"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint16" 
+   type="revolute"> 
+    <origin 
+      xyz="3 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link3"/> 
+    <child 
+     link="link16"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint17" 
+   type="revolute"> 
+    <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link4"/> 
+    <child 
+     link="link17"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint18" 
+   type="revolute"> 
+    <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link4"/> 
+    <child 
+     link="link18"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint19" 
+   type="revolute"> 
+    <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link4"/> 
+    <child 
+     link="link19"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint20" 
+   type="revolute"> 
+    <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link4"/> 
+    <child 
+     link="link20"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint21" 
+   type="revolute"> 
+    <origin 
+      xyz="4 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link4"/> 
+    <child 
+     link="link21"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint22" 
+   type="revolute"> 
+    <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link5"/> 
+    <child 
+     link="link22"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint23" 
+   type="revolute"> 
+    <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link5"/> 
+    <child 
+     link="link23"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint24" 
+   type="revolute"> 
+    <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link5"/> 
+    <child 
+     link="link24"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint25" 
+   type="revolute"> 
+    <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link5"/> 
+    <child 
+     link="link25"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint26" 
+   type="revolute"> 
+    <origin 
+      xyz="5 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link5"/> 
+    <child 
+     link="link26"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint27" 
+   type="revolute"> 
+    <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link6"/> 
+    <child 
+     link="link27"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint28" 
+   type="revolute"> 
+    <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link6"/> 
+    <child 
+     link="link28"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint29" 
+   type="revolute"> 
+    <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link6"/> 
+    <child 
+     link="link29"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint30" 
+   type="revolute"> 
+    <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link6"/> 
+    <child 
+     link="link30"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint31" 
+   type="revolute"> 
+    <origin 
+      xyz="6 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link6"/> 
+    <child 
+     link="link31"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint32" 
+   type="revolute"> 
+    <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link7"/> 
+    <child 
+     link="link32"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint33" 
+   type="revolute"> 
+    <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link7"/> 
+    <child 
+     link="link33"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint34" 
+   type="revolute"> 
+    <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link7"/> 
+    <child 
+     link="link34"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ <joint 
+   name="joint35" 
+   type="revolute"> 
+    <origin 
+      xyz="7 0 0" 
+      rpy="0 0 0"/> 
+    <parent 
+     link="link7"/> 
+    <child 
+     link="link35"/> 
+    <axis 
+     xyz="0 0 1"/> 
+    <limit 
+     lower="0"
+      upper="0"
+      effort="0"
+      velocity="0"  />
+     <dynamics
+     damping="0.05"  />
+ </joint>
+ 
+ </robot>

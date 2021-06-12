@@ -211,6 +211,32 @@ namespace pinocchio
     jointVelocitySelector_impl(Eigen::MatrixBase<D> & a) const
     { return SizeDepType<NV>::segment(a.derived(),idx_v(),nv()); }
 
+  // -------------- new section here -----------------------------//
+
+   template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::ConstType
+    jointVelocitySelector_mat(const Eigen::MatrixBase<D> & A) const
+    { return derived().jointVelocitySelector_mat_impl(A.derived()); }
+    
+    template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::ConstType
+    jointVelocitySelector_mat_impl(const Eigen::MatrixBase<D> & A) const
+    { return SizeDepType<NV>::middleRows(A.derived(),idx_v(),1); }
+    
+    // Non-const access
+    template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::Type
+    jointVelocitySelector_mat(Eigen::MatrixBase<D> & A) const
+    { return derived().jointVelocitySelector_mat_impl(A.derived()); }
+    
+    template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::Type
+    jointVelocitySelector_mat_impl(Eigen::MatrixBase<D> & A) const
+    { return SizeDepType<NV>::middleRows(A.derived(),idx_v(),1); }
+
+
+//  --------------- new section ends-------------------------//
+
     /* Acces to dedicated columns in a ForceSet or MotionSet matrix.*/
     // Const access
     template<typename D>

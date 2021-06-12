@@ -210,6 +210,8 @@ namespace pinocchio
     
       jmodel.jointVelocitySelector(data.u) -= jdata.S().transpose()*data.f[i];
 
+     // std::cout << "data.u here is" << data.u << std::endl;
+
      // jmodel.calc_aba(jdata.derived(), Ia, parent > 0);
 
       if (parent > 0)
@@ -261,11 +263,14 @@ namespace pinocchio
         jmodel.jointVelocitySelector(data.ddq_new).noalias() =
         jdata.Dinv() * jmodel.jointVelocitySelector(data.u) - jdata.UDinv().transpose() * data.a_gf[i].toVector();
        
+
         data.a_gf[i] += jdata.S() * jmodel.jointVelocitySelector(data.ddq_new);
-        
+
+        // std::cout << "data.a_gf[i] is" << data.a_gf[i] << std::endl;
+        // std::cout << "jdata.Dinv() is" << jdata.Dinv() << std::endl;
+        // std::cout << "data.ddq_new is" << data.ddq_new << std::endl;
 
       //   std::cout <<"Minv_mat_prod here is " << data.ddq_new << std:: endl;
-
 
     }
     
@@ -320,8 +325,6 @@ namespace pinocchio
                   typename Pass1_new::ArgsType(model,data,q.derived(),v.derived()));
       }
 
-
-
     for (JointIndex ii=1; ii<2*model.nv+1; ++ii)
      {
       //   std::cout <<"model.nv  is" << model.nv  << std::endl;
@@ -368,7 +371,8 @@ namespace pinocchio
 
      }
 
-    
+       // std::cout << "Minv_mat_prod here is" << data.Minv_mat_prod << std::endl;
+
     return data.Minv_mat_prod;
   }
 

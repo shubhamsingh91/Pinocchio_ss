@@ -11,6 +11,8 @@
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/aza.hpp"
 #include "pinocchio/algorithm/azamat.hpp"
+#include "pinocchio/algorithm/azamat_v2.hpp"
+#include "pinocchio/algorithm/azamat_v3.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -32,7 +34,7 @@ int main(int argc, const char ** argv)
   PinocchioTicToc timer(PinocchioTicToc::US);
 
   #ifdef NDEBUG
-  const int NBT = 10000; // 50000 initially
+  const int NBT = 1; // 50000 initially
   #else
     const int NBT = 1;
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
@@ -43,10 +45,10 @@ int main(int argc, const char ** argv)
     string str_urdf[15];
     int str_int;
 
-   // str_int = 11; // integer to change the str_urdf
+   str_int = 9; // integer to change the str_urdf
 
-    cout << "Enter the str_int here" << endl;
-    cin >> str_int;
+   // cout << "Enter the str_int here" << endl;
+   // cin >> str_int;
 
     str_urdf[0] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/double_pendulum_v1.urdf"; // double pendulum
     str_urdf[1] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/ur3_robot.urdf"; // UR3
@@ -113,7 +115,8 @@ int main(int argc, const char ** argv)
     PINOCCHIO_ALIGNED_STD_VECTOR(VectorXd) qddots (NBT); 
     PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat (NBT); 
     PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat_n2n (NBT); 
-  
+    PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat_n2n_v3 (NBT); 
+
   // MatrixXd tau_mat(MatrixXd::Identity(model.nv,model.nv));
 
   // randomizing input data here
@@ -128,10 +131,11 @@ int main(int argc, const char ** argv)
       qddots[i] =  Eigen::VectorXd::Random(model.nv);
       tau_mat[i] = Eigen::MatrixXd::Identity(model.nv,model.nv);
       tau_mat_n2n[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
-  
+      tau_mat_n2n_v3[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+
     }   
 
- double time_ABA[6];
+ double time_ABA[7];
 
   timer.tic();
   SMOOTH(NBT)
@@ -329,16 +333,30 @@ timer.tic();
 
   //std::cout << "IPR using AZA_mat method is = \t\t"; timer.toc(std::cout,NBT);
  
+ //-----------------------------------------------------------------//
+    // FD partials using AZAmat_v3 function here-----------------------//
+    //-----------------------------------------------------------------//
+
+    tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+
+    timer.tic();
+    SMOOTH(NBT)
+    azamat_v3(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+    time_ABA[6] = timer.toc()/NBT;
+    std::cout << "IPR using AZA_mat_v3 method is = \t\t" << time_ABA[6] << endl;
+
  // Difference matrix calculations here
   
   MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
   MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
+  MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
 
   //eq2 = data.Minv_mat_prod - data.Minv;
 
   diff_daba_dq2 = daba_dq-data.Minv_mat_prod.middleCols(0,model.nv);
   diff_daba_dqd2 = daba_dv-data.Minv_mat_prod.middleCols(model.nv,model.nv);
 
+  diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
 
   std::cout << "---------------------------------------------" << endl;
 
@@ -347,8 +365,18 @@ timer.tic();
 
   std::cout << "\n" << endl;
 
+  std::cout << "Norm of difference between mat_v1 and mat_v3 is" << diff_mat1.squaredNorm() << std::endl;
+
+  //-------------------------------------------------------------
+  // Just the IPR equation here using DMM
+  //-------------------------------------------------------------
+
+
+
+  //---------------------------------------------------------------
+
   // Writing all the timings to the file
-  for (int ii=0; ii<6 ; ii++)
+  for (int ii=0; ii<8 ; ii++)
   {
     file1 << time_ABA[ii] << "\n" << endl;
   }
@@ -360,6 +388,18 @@ timer.tic();
   // std::cout << "---------------------------------------------" << endl;
   // std::cout << "Minv using AZA_mat value is " << data.Minv_mat_prod << endl;
   // std::cout << "---------------------------------------------" << endl;
+
+  // Testing some eigen matrices here
+
+//   MatrixXd temp1(MatrixXd::Random(5,5));
+
+//  cout <<"temp1 matrix is" << temp1 << endl;
+//  cout << "\n " << endl;
+
+//  cout << "temp1 fourth row is" << temp1.row(3) << endl;
+//  cout << "temp1 fourth row is" << temp1.middleRows(3,1) << endl;
+
+
 
   return 0;
 

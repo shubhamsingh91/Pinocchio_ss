@@ -103,6 +103,8 @@ namespace pinocchio
 
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_gf_v1;
 
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) a_gf_v2;
+
     /// \brief Vector of joint accelerations expressed at the origin of the world including gravity contribution.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_gf;
     
@@ -121,6 +123,9 @@ namespace pinocchio
     PINOCCHIO_ALIGNED_STD_VECTOR(Force) f;
 
     PINOCCHIO_ALIGNED_STD_VECTOR(Force) f_v1;
+
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) f_v2; // pi^A matrix nx2n
+
 
     /// \brief Vector of body forces expressed in the world frame. For each body, the force represents the sum of
     ///        all external forces acting on the body.
@@ -175,8 +180,23 @@ namespace pinocchio
     /// \brief Minv_mat_prod
     RowMatrixXs Minv_mat_prod;
 
+    /// \brief Minv_mat_prod_v2
+    RowMatrixXs Minv_mat_prod_v2;
+
+
+    /// \brief tau_mat_v2
+    RowMatrixXs tau_mat_v2;
+
+
+    /// \brief Minv_mat_prod_v3
+    RowMatrixXs Minv_mat_prod_v3;
+
+
     /// \brief The joint accelerations computed from ABA_ new
     TangentVectorType ddq_new;
+
+    /// \brief The joint accelerations computed from ABA_ new
+    TangentVectorType ddq_new_v2;
 
     /// \brief The Coriolis matrix (a square matrix of dim model.nv).
     MatrixXs C;
@@ -235,9 +255,13 @@ namespace pinocchio
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Yaba_v1;  // TODO: change with dense symmetric matrix6
 
 
-    /// \brief Intermediate quantity corresponding to apparent torque [ABA]
-    TangentVectorType u;                  // Joint Inertia
-    
+    /// \brief Intermediate quantity corresponding to apparent torque [ABA], nx2n here
+    MatrixXs u_v2;                 
+
+       /// \brief Intermediate quantity corresponding to apparent torque [ABA]
+    TangentVectorType u;                  // Joint Inertia 
+
+
     // CCRBA return quantities
     /// \brief Centroidal Momentum Matrix
     /// \note \f$ hg = A_g \dot{q}\f$ maps the joint velocity set to the centroidal momentum.
@@ -248,6 +272,12 @@ namespace pinocchio
     /// \note \f$ \dot{h_g} = A_g \ddot{q}\ + \dot{A_g}\dot{q}\f$ maps the joint velocity and acceleration vectors to the time variation of the centroidal momentum.
     Matrix6x dAg;
     
+    // new stuff SS for AZAmat_v2
+    Matrix6x pa_v2;
+
+  // new stuff SS for AZAmat_v2
+    Matrix6x pa_v3;
+
     /// \brief Centroidal momentum quantity.
     /// \note The centroidal momentum is expressed in the frame centered at the CoM and aligned with the inertial frame (i.e. the world frame).
     /// \note \f$ h_g = \left( m\dot{c}, L_{g} \right); \f$. \f$ h_g \f$ is the stack of the linear momentum and the angular momemtum vectors.
@@ -266,6 +296,12 @@ namespace pinocchio
 
     /// \brief Spatial forces set, used in CRBA and CCRBA
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Fcrb;
+
+    /// \brief Spatial forces set, used in CRBA and CCRBA
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Fcrb_v2;
+
+    /// \brief Spatial forces set, used in CRBA and CCRBA
+    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Pcrb_v2;
 
     /// \brief Index of the last child (for CRBA)
     std::vector<int> lastChild;

@@ -10,6 +10,7 @@
 #include "pinocchio/algorithm/check.hpp"
 #include <iostream>
 #include <stdlib.h>
+#include <string>
 
 /// @cond DEV
 
@@ -156,6 +157,7 @@ namespace pinocchio
       typename Inertia::Matrix6 & Ia = data.Yaba[i];
       
       jmodel.jointVelocitySelector(data.u) -= jdata.S().transpose()*data.f[i];
+
       jmodel.calc_aba(jdata.derived(), Ia, parent > 0);
 
       if (parent > 0)
@@ -167,15 +169,14 @@ namespace pinocchio
 
       // std:: cout << "Testing data.f[parent] here" << std::endl;
       // std:: cout << "f(i) is" << data.f[parent] <<  std::endl;
+      //  std:: cout << "pa is" << pa <<  std::endl;
 
 
       }
     }
     
   };
-  
-  
-  
+   
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl>
   struct AbaForwardStep2
   : public fusion::JointUnaryVisitorBase< AbaForwardStep2<Scalar,Options,JointCollectionTpl> >

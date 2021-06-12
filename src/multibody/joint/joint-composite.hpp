@@ -382,6 +382,17 @@ namespace pinocchio
     typename SizeDepType<NV>::template SegmentReturn<D>::Type
     jointVelocitySelector( Eigen::MatrixBase<D>& a) const { return a.segment(Base::i_v,nv());  }
 
+ //----------- new template here ---------------------//
+
+    template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::ConstType
+    jointVelocitySelector_mat(const Eigen::MatrixBase<D>& A) const { A.middleRows(Base::i_v,1); }
+    template<typename D>
+    typename SizeDepType<NV>::template RowsReturn<D>::Type
+    jointVelocitySelector_mat( Eigen::MatrixBase<D>& A) const {  A.middleRows(Base::i_v,1); }
+
+//------------ new template ends here---------------//
+
     template<typename D>
     typename SizeDepType<NV>::template ColsReturn<D>::ConstType 
     jointCols(const Eigen::MatrixBase<D>& A) const { return A.middleCols(Base::i_v,nv());  }
@@ -395,12 +406,24 @@ namespace pinocchio
     template<typename D>
     typename SizeDepType<Eigen::Dynamic>::template SegmentReturn<D>::Type
     jointConfigSelector_impl(Eigen::MatrixBase<D>& a) const { return a.segment(Base::i_q,nq()); }
+
     template<typename D>
     typename SizeDepType<Eigen::Dynamic>::template SegmentReturn<D>::ConstType
     jointVelocitySelector_impl(const Eigen::MatrixBase<D>& a) const { return a.segment(Base::i_v,nv()); }
     template<typename D>
     typename SizeDepType<Eigen::Dynamic>::template SegmentReturn<D>::Type
     jointVelocitySelector_impl(Eigen::MatrixBase<D>& a) const { return a.segment(Base::i_v,nv()); }
+
+  //---- new section here ---------------
+
+   template<typename D>
+    typename SizeDepType<Eigen::Dynamic>::template RowsReturn<D>::ConstType
+    jointVelocitySelector_mat_impl(const Eigen::MatrixBase<D>& A) const {  A.middleRows(Base::i_v,1); }
+    template<typename D>
+    typename SizeDepType<Eigen::Dynamic>::template RowsReturn<D>::Type
+    jointVelocitySelector_mat_impl(Eigen::MatrixBase<D>& A) const {  A.middleRows(Base::i_v,1); }
+
+//--- new section ends here--------------
 
     template<typename D>
     typename SizeDepType<Eigen::Dynamic>::template ColsReturn<D>::ConstType 
