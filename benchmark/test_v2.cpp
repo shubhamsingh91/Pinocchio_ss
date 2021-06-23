@@ -42,11 +42,15 @@ int main(int argc, const char ** argv)
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
   #endif
 
-    //  int n_vec[]={2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
+     // int n_vec[]={2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
+      
+     // int n_vec[]={9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
+
+  
    // int n_vec[]={220,250,280,300,320,350,380,400,420,450,480,500};
    //  int n_vec[]={320,350,380,400,420,450,480,500};
 
-     int n_vec[]={2};
+      int n_vec[]={3};
 
     // for (int jj=0; jj<19; jj++)
     // {
@@ -54,12 +58,16 @@ int main(int argc, const char ** argv)
     //   // cout << "n_vec is " << n_vec[jj] << endl;
     // }
 
-    int bf=1; // branching factor
+    int bf=2; // branching factor
 
   for(int jj=0; jj<1; jj++){
 
 
+      std::cout << "Setting model" << std::endl;
+
         Model model;
+
+      std::cout << "Setting strings" << std::endl;
 
         string str_urdf="", str_file_ext ,n_str,n_bf;
         string robot_name="";
@@ -93,8 +101,6 @@ int main(int argc, const char ** argv)
         robot_name.append("link_bf_");
         robot_name.append(n_bf);
 
-    // cout <<"robot_name is " << robot_name << std::endl;
-
         str_file_ext = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/";
         str_urdf.append(str_file_ext);
         str_urdf.append(robot_name);
@@ -102,12 +108,11 @@ int main(int argc, const char ** argv)
     
         cout <<"str_urdf is "<< str_urdf << endl;
 
-    //  str_urdf= "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/500link.urdf"; //2link
-
         std :: string filename = str_urdf;
 
         // Opening a file to write to it
-        
+          std::cout << "Opening file" << std::endl;
+    
         string filewrite="";
 
         ofstream file1;
@@ -128,6 +133,8 @@ int main(int argc, const char ** argv)
             with_ff = false;
         }
 
+        std::cout << "Building model here" << std::endl;
+
         if( filename == "HS") 
         buildModels::humanoidRandom(model,true);
         else
@@ -141,6 +148,8 @@ int main(int argc, const char ** argv)
         std::cout << "nq = " << model.nq << std::endl;
         std::cout << "nv = " << model.nv << std::endl;
         cout << "Model is " << robot_name << endl;
+
+        std::cout << "Setting data here" << std::endl;
 
         Data data(model);
         VectorXd qmax = Eigen::VectorXd::Ones(model.nq);
@@ -160,14 +169,14 @@ int main(int argc, const char ** argv)
 
         for(size_t i=0;i<NBT;++i)
         {
-        qs[i]     = randomConfiguration(model,-qmax,qmax);
-        qdots[i]  = Eigen::VectorXd::Random(model.nv);
-        taus[i] = Eigen::VectorXd::Random(model.nv);
-        qddots[i] =  Eigen::VectorXd::Random(model.nv);
-        tau_mat[i] = Eigen::MatrixXd::Identity(model.nv,model.nv);
-        tau_mat_n2n[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
-        tau_mat_n2n_v2[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
-        tau_mat_n2n_v3[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+            qs[i]     = randomConfiguration(model,-qmax,qmax);
+            qdots[i]  = Eigen::VectorXd::Random(model.nv);
+            taus[i] = Eigen::VectorXd::Random(model.nv);
+            qddots[i] =  Eigen::VectorXd::Random(model.nv);
+            tau_mat[i] = Eigen::MatrixXd::Identity(model.nv,model.nv);
+            tau_mat_n2n[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+            tau_mat_n2n_v2[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+            tau_mat_n2n_v3[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
 
         }   
 
@@ -180,7 +189,6 @@ int main(int argc, const char ** argv)
 
    // std::cout << "ABA= \t\t"; timer.toc(std::cout,NBT);
     std::cout << "ABA= \t\t" <<  time_ABA[0] << endl;
-
 
     timer.tic();
     SMOOTH(NBT)
@@ -196,13 +204,13 @@ int main(int argc, const char ** argv)
 
     for (int ii=0; ii < model.nv ;ii++)
     {
-    for (int jj=0; jj<ii; jj++)
-    {
-        if (ii!=jj)
-        {
-            data.Minv.coeffRef(ii,jj) = data.Minv.coeffRef(jj,ii);
-        }
-    }
+        for (int jj=0; jj<ii; jj++)
+            {
+                if (ii!=jj)
+                {
+                    data.Minv.coeffRef(ii,jj) = data.Minv.coeffRef(jj,ii);
+                }
+            }
     }
 
     //----------------------------------------------------//
@@ -282,8 +290,8 @@ int main(int argc, const char ** argv)
 
     std::cout << "IPR using AZA_mat method is = \t\t" << time_ABA[5] << endl;
     
-    std::cout << "Minvmat_v1 is" << data.Minv_mat_prod << std::endl;
-    std::cout <<"---------------------------------------" << endl;
+   // std::cout << "Minvmat_v1 is" << data.Minv_mat_prod << std::endl;
+    std::cout << "---------------------------------------" << endl;
 
     //-----------------------------------------------------------------//
     // FD partials using AZAmat_v2 function here-----------------------//
@@ -297,8 +305,7 @@ int main(int argc, const char ** argv)
     time_ABA[6] = timer.toc()/NBT;
 
     std::cout << "IPR using AZA_mat_v2 method is = \t\t" << time_ABA[6] << endl;
-    
-    std::cout <<"---------------------------------------" << endl;
+    std::cout << "---------------------------------------" << endl;
 
     //-----------------------------------------------------------------//
     // FD partials using AZAmat_v3 function here-----------------------//
@@ -312,10 +319,9 @@ int main(int argc, const char ** argv)
     time_ABA[7] = timer.toc()/NBT;
 
     std::cout << "IPR using AZA_mat_v3 method is = \t\t" << time_ABA[7] << endl;
-    std::cout << "Minvmat_v3 is" << data.Minv_mat_prod_v3 << std::endl;
+   // std::cout << "Minvmat_v3 is" << data.Minv_mat_prod_v3 << std::endl;
 
     std::cout <<"---------------------------------------" << endl;
-
 
     // Difference matrix calculations here
     
