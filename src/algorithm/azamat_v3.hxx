@@ -151,7 +151,10 @@ namespace pinocchio
 
       
       std::cout << "---------- Loop 2 variables here--------------" << std::endl;
+      std::cout << "jmodel.nv is" << jmodel.nv() << std::endl;
       std::cout << "i is" << i << std::endl;
+      std::cout << "jmodel.idx_v() is" << jmodel.idx_v() << std::endl;
+
       std::cout << "parent is" << parent << std::endl;
 
       std::cout <<"Fcrb here in second loop is" << Fcrb << std:: endl;
@@ -184,7 +187,6 @@ namespace pinocchio
        
        // std::cout  << "parent is is" << parent << std:: endl;
        // std::cout  << "i is" << i << std:: endl;
-       // std::cout << "jmodel.idx_v() is" << jmodel.idx_v() << std::endl;
        
        // std:: cout <<  "Fcrb is" << Fcrb.middleCols(0,2*model.nv) << std::endl;
 
@@ -192,11 +194,23 @@ namespace pinocchio
 
        // i-1 is replaced by jmodel.idx_v()
 
-        
-         qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv)
+       //-- original expression--------- 
+
+       //  qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv)
+       //     - SDinv_cols.transpose() * Fcrb.middleCols(0,2*model.nv);
+
+       //-- alternate expression--------- 
+
+
+          qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = 
+          jdata.Dinv()*data.tau_mat_v2.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv)
             - SDinv_cols.transpose() * Fcrb.middleCols(0,2*model.nv);
 
-      // qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv);
+          std::cout << "jdata.Dinv() here is" << jdata.Dinv() << std::endl;
+          std::cout << "SDinv_cols here is" << SDinv_cols.transpose() << std::endl;
+          std::cout << "qdd_mat here is" << qdd_mat << std::endl;
+
+       // qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv);
 
        // std::cout << "i here is" << i << std::endl;
        // std::cout << "qdd block matrix here is" <<   qdd_mat.block(i-1,0,1,2*model.nv) << std::endl;
@@ -205,19 +219,19 @@ namespace pinocchio
          if(parent > 0)
           {
           
-          FcrbTmp.noalias() = U_cols* qdd_mat.block(i-1,0,1,2*model.nv);
+            FcrbTmp.noalias() = U_cols* qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
 
-          std::cout << "FcrbTmp in parent loop is" << FcrbTmp << std::endl;
+            std::cout << "FcrbTmp in parent loop is" << FcrbTmp << std::endl;
 
-            // std::cout << "FcrbTmp here is " << FcrbTmp << std::endl;
+              // std::cout << "FcrbTmp here is " << FcrbTmp << std::endl;
 
-            // data.Fcrb_v2[parent]  += FcrbTmp; // this also works here
+              // data.Fcrb_v2[parent]  += FcrbTmp; // this also works here
 
-            // Fcrb  += FcrbTmp; // this also works here
-    
-          Fcrb.middleCols(0,2*model.nv)  += FcrbTmp.middleCols(0,2*model.nv);
+              // Fcrb  += FcrbTmp; // this also works here
+      
+            Fcrb.middleCols(0,2*model.nv)  += FcrbTmp.middleCols(0,2*model.nv);
 
-          std::cout << "Fcrb in parent loop is" << Fcrb << std::endl;
+            std::cout << "Fcrb in parent loop is" << Fcrb << std::endl;
 
           }
         
@@ -263,7 +277,9 @@ namespace pinocchio
       // std::cout << "jmodel.idx_v() here in third loop is" << jmodel.idx_v() << std::endl;
       
       std::cout << "---------- Loop 3 variables here--------------" << std::endl;
+      std::cout << "jmodel.nv is" << jmodel.nv() << std::endl;
       std::cout << "i is" << i << std::endl;
+      std::cout << "jmodel.idx_v() is" << jmodel.idx_v() << std::endl;
       std::cout << "parent is" << parent << std::endl;
 
       if(parent > 0)
@@ -274,12 +290,14 @@ namespace pinocchio
 
         std::cout << "data.Fcrb_v2[parent] in third loop is" << data.Fcrb_v2[parent] << std::endl;
 
-        FcrbTmp.block(i-1,0,1,2*model.nv).noalias() = UDinv_cols.transpose() * data.Fcrb_v2[parent];
-        qdd_mat.block(i-1,0,1,2*model.nv).noalias() -=  FcrbTmp.block(i-1,0,1,2*model.nv);
+        FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = UDinv_cols.transpose() * data.Fcrb_v2[parent];
+        qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
 
       }
-          data.Fcrb_v2[i] = J_cols * qdd_mat.block(i-1,0,1,2*model.nv);
-        
+          data.Fcrb_v2[i] = J_cols * qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+
+          std::cout << " data.Fcrb_v2[i] in third loop is" << data.Fcrb_v2[i] << std::endl;
+    
           if(parent > 0)
             data.Fcrb_v2[i] += data.Fcrb_v2[parent];
 

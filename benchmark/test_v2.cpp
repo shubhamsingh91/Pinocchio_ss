@@ -14,7 +14,7 @@
 #include "pinocchio/algorithm/aza.hpp"
 #include "pinocchio/algorithm/azamat.hpp"
 #include "pinocchio/algorithm/azamat_v2.hpp"
-// #include "pinocchio/algorithm/azamat_v3.hpp"
+#include "pinocchio/algorithm/azamat_v3.hpp"
 #include "pinocchio/algorithm/azamat_v4.hpp"
 
 #include <iostream>
@@ -125,7 +125,7 @@ int main(int argc, const char ** argv)
 
 
         if(argc>1) filename = argv[1];
-        bool with_ff = true; // true originally
+        bool with_ff = false; // true originally
 
         if(argc>2)
         {
@@ -310,10 +310,12 @@ int main(int argc, const char ** argv)
     std::cout << "---------------------------------------" << endl;
 
     //-----------------------------------------------------------------//
-    // FD partials using AZAmat_v4 function here-----------------------//
+    // FD partials using AZAmat_v3/4 function here-----------------------//
     //-----------------------------------------------------------------//
 
     tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+
+    std::cout<< "tau_mat_n2n_v3 is" << tau_mat_n2n_v3[0] << std::endl;
 
     timer.tic();
     SMOOTH(NBT)

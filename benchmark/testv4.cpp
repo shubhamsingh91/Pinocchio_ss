@@ -10,6 +10,10 @@
 #include "pinocchio/algorithm/azamat_v3.hpp"
 #include "pinocchio/algorithm/azamat_v4.hpp"
 #include "pinocchio/utils/timer.hpp"
+#include "pinocchio/algorithm/aba-derivatives.hpp"
+#include "pinocchio/algorithm/rnea-derivatives.hpp"
+#include "pinocchio/algorithm/azamat_v4.hpp"
+#include "pinocchio/algorithm/rnea-derivatives-faster.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -49,6 +53,7 @@ int main(int argc, const char ** argv)
     str_urdf[0] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/double_pendulum_v1.urdf"; // double pendulum
     str_urdf[1] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/40link.urdf"; // 40_link
     str_urdf[2] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/simple_humanoid.urdf"; //simple humanoid
+    str_urdf[3] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/ur3_robot.urdf"; // UR3
 
     std :: string filename = str_urdf[str_int];
 
@@ -91,6 +96,7 @@ int main(int argc, const char ** argv)
     PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat (NBT); 
     PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat_n2n (NBT); 
     PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat_n2n_v2 (NBT); 
+    PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXd) tau_mat_n2n_v3 (NBT); 
 
   // MatrixXd tau_mat(MatrixXd::Identity(model.nv,model.nv));
 
@@ -104,66 +110,119 @@ int main(int argc, const char ** argv)
       qdots[i]  = Eigen::VectorXd::Random(model.nv);
       taus[i] = Eigen::VectorXd::Random(model.nv);
       qddots[i] =  Eigen::VectorXd::Random(model.nv);
-      tau_mat_n2n[i] = Eigen::MatrixXd::Random(model.nv,2*model.nv);
-      tau_mat_n2n_v2[i] = tau_mat_n2n[i];
+      tau_mat_n2n[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+      tau_mat_n2n_v2[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
+      tau_mat_n2n_v3[i] = Eigen::MatrixXd::Identity(model.nv,2*model.nv);
 
     }   
 
-  std::cout << "tau_mat input here is" << tau_mat_n2n[0] << std::endl;
+ // std::cout << "tau_mat input here is" << tau_mat_n2n[0] << std::endl;
+
+    //----------------------------------------------------//
+    // Compute RNEA derivatives here ---------------------//
+    //----------------------------------------------------//
+
+    PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXd) drnea_dq(MatrixXd::Zero(model.nv,model.nv));
+    PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXd) drnea_dv(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd drnea_da(MatrixXd::Zero(model.nv,model.nv));
+
+    timer.tic();
+    SMOOTH(NBT)
+    {
+        computeRNEADerivatives(model,data,qs[_smooth],qdots[_smooth],qddots[_smooth],
+                            drnea_dq,drnea_dv,drnea_da);
+    }
+
+     std::cout << "RNEA derivatives= \t\t"; timer.toc(std::cout,NBT);
+
+    //----------------------------------------------------//
+    // Compute RNEA derivatives faster--------------------//
+    //----------------------------------------------------//
+
+    MatrixXd drnea2_dq(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd drnea2_dv(MatrixXd::Zero(model.nv,model.nv));
+
+    timer.tic();
+    SMOOTH(NBT)
+    {
+        computeRNEADerivativesFaster(model,data,qs[_smooth],qdots[_smooth],qddots[_smooth],
+                            drnea2_dq,drnea2_dv,drnea_da);
+    }
+    std::cout << "RNEA derivativeF= \t\t" ; timer.toc(std::cout,NBT);
+
+    //----------------------------------------------------//
+    // Calculate ABA derivatives here
+    //----------------------------------------------------//
+
+    PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXd) daba_dq(MatrixXd::Zero(model.nv,model.nv));
+    PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXd) daba_dv(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd daba_dtau(MatrixXd::Zero(model.nv,model.nv));
+
+    taus[0] = data.tau;
+
+    timer.tic();
+    SMOOTH(NBT)
+    {
+        computeABADerivatives(model,data,qs[_smooth],qdots[_smooth],taus[_smooth],
+                            daba_dq,daba_dv,daba_dtau);
+    }
+     std::cout << "ABA derivatives= \t\t"; timer.toc(std::cout,NBT);
 
 
- timer.tic();
-  SMOOTH(NBT)
-   azamat(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n[_smooth]); // this one is correct
-  std::cout << "IPR using AZA_mat method is = \t\t"; timer.toc(std::cout,NBT);
-  std::cout <<"------------------------------" << std::endl;
-  std::cout << "Mat v1 is" << data.Minv_mat_prod << std::endl;
+
+    //-----------------------------------------------------------------//
+    // FD partials using AZAmat function here--------------------------//
+    //-----------------------------------------------------------------//
+
+    tau_mat_n2n[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+
+    timer.tic();
+    SMOOTH(NBT)
+    azamat(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n[_smooth]);
+    std::cout << "IPR using AZA_mat method is = \t\t" ;timer.toc(std::cout,NBT);
+    
+   // std::cout << "Minvmat_v1 is" << data.Minv_mat_prod << std::endl;
+    std::cout << "---------------------------------------" << endl;
 
 
-//  timer.tic();
-//   SMOOTH(NBT)
-//    azamat_v2(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n_v2[_smooth]); // this is not correct
-//   std::cout << "IPR using AZA_mat_v2 method is = \t\t"; timer.toc(std::cout,NBT);
+    //-----------------------------------------------------------------//
+    // FD partials using AZAmat_v3/4 function here-----------------------//
+    //-----------------------------------------------------------------//
 
-// Method-3
+    tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
 
-  // timer.tic();
-  // SMOOTH(NBT)
-  //   azamat_v3(model,data,qs[_smooth],tau_mat_n2n_v2[_smooth]);
-  // std::cout << "IPR using AZA_mat_v3 method is = \t\t"; timer.toc(std::cout,NBT);
+   // std::cout<< "tau_mat_n2n_v3 is" << tau_mat_n2n_v3[0] << std::endl;
 
-// Method-4
+    timer.tic();
+    SMOOTH(NBT)
+    azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
 
-  timer.tic();
-  SMOOTH(NBT)
-    azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v2[_smooth]);
-  std::cout << "IPR using AZA_mat_v4 method is = \t\t"; timer.toc(std::cout,NBT);
+    std::cout << "IPR using AZA_mat_v4 method is = \t\t" ;timer.toc(std::cout,NBT);
 
+    std::cout <<"---------------------------------------" << endl;
 
 // Comparison of results here
 
-  MatrixXd diff_mat(MatrixXd::Zero(model.nv,2*model.nv));
 
-  diff_mat = data.Minv_mat_prod - data.Minv_mat_prod_v3;
+    MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
 
-  std::cout <<"------------------------------" << std::endl;
-  std::cout << "\n " << std::endl; 
- // std::cout << "Mat v1 is" << data.Minv_mat_prod << std::endl;
-  std::cout <<"------------------------------" << std::endl;
-  std::cout << "\n " << std::endl; 
-  //std::cout << "Mat v3 is" << data.Minv_mat_prod_v3 << std::endl;
-  std::cout <<"------------------------------" << std::endl;
- // std::cout << "Difference matrix here is" << diff_mat << std::endl;
+    //eq2 = data.Minv_mat_prod - data.Minv;
 
-  std::cout << "Norm of the difference matrix is " << diff_mat.squaredNorm() << std::endl;
+    diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
+    diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
 
-//   MatrixXd temp1(MatrixXd::Random(5,5));
+    diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
 
-//  cout <<"temp1 matrix is" << temp1 << endl;
-//  cout << "\n " << endl;
+    std::cout << "------------------------------" << std::endl;
 
-//  cout << "temp1 second row is" << temp1.row(2) << endl;
-//  cout << "temp1 second row is" << temp1.middleRows(2,1) << endl;
+    std::cout << "Norm of the difference matrix for AZAmat FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
+    std::cout << "Norm of the difference matrix for AZAmat FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
+
+    std::cout << "\n" << endl;
+
+    std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
 
 
 

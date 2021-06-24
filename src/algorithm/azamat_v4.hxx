@@ -150,13 +150,13 @@ namespace pinocchio
       typename Data::Matrix6x & FcrbTmp = data.Fcrb_v2.back(); // last element of the array
 
       
-      std::cout << "---------- Loop 2 variables here--------------" << std::endl;
-      std::cout << "i is" << i << std::endl;
-      std::cout << "parent is" << parent << std::endl;
-      std::cout << "size of data.Fcrb_v2 is" << sizeof(data.Fcrb_v2)  << std::endl;
+    //   std::cout << "---------- Loop 2 variables here--------------" << std::endl;
+    //   std::cout << "i is" << i << std::endl;
+    //   std::cout << "parent is" << parent << std::endl;
+    //   std::cout << "size of data.Fcrb_v2 is" << sizeof(data.Fcrb_v2)  << std::endl;
 
-      std::cout <<"data.Fcrb_v2[i] here in second loop is" << data.Fcrb_v2[i] << std:: endl;
-      std::cout <<"Fcrb here in second loop is" << Fcrb << std:: endl;
+    //   std::cout <<"data.Fcrb_v2[i] here in second loop is" << data.Fcrb_v2[i] << std:: endl;
+    //   std::cout <<"Fcrb here in second loop is" << Fcrb << std:: endl;
      
       //std::cout <<"FcrbTmp here in second loop is" << FcrbTmp << std:: endl;
 
@@ -202,7 +202,13 @@ namespace pinocchio
 
         //---- alternate expression-------------//
         
-         qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv)
+        //  qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv)
+        //     - SDinv_cols.transpose() * data.Fcrb_v2[i];
+
+        //---- alternate expression- with jmodel vars------------//
+        
+         qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = 
+         jdata.Dinv()*data.tau_mat_v2.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv)
             - SDinv_cols.transpose() * data.Fcrb_v2[i];
 
        // qdd_mat.block(i-1,0,1,2*model.nv).noalias() = jdata.Dinv()*data.tau_mat_v2.block(i-1,0,1,2*model.nv);
@@ -214,15 +220,19 @@ namespace pinocchio
          if(parent > 0)
           {
 
-              // original expression
+            // original expression
           
-         // FcrbTmp.noalias() = U_cols* qdd_mat.block(i-1,0,1,2*model.nv);
+             // FcrbTmp.noalias() = U_cols* qdd_mat.block(i-1,0,1,2*model.nv);
 
             // alternative expression
 
-          data.Fcrb_v2_tmp.noalias() = U_cols* qdd_mat.block(i-1,0,1,2*model.nv);
+             // data.Fcrb_v2_tmp.noalias() = U_cols* qdd_mat.block(i-1,0,1,2*model.nv);
 
-          std::cout << "FcrbTmp in parent loop is" << data.Fcrb_v2_tmp << std::endl;
+            // alternative expression with jmodel vars
+
+             data.Fcrb_v2_tmp.noalias() = U_cols* qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+
+        //  std::cout << "FcrbTmp in parent loop is" << data.Fcrb_v2_tmp << std::endl;
 
             // std::cout << "FcrbTmp here is " << FcrbTmp << std::endl;
 
@@ -231,9 +241,9 @@ namespace pinocchio
             // Fcrb  += FcrbTmp; // this also works here
 
             
-            std::cout << "Fcrb before update in parent loop is" << Fcrb << std::endl;
-            std::cout << "data.Fcrb_v2[i] before update in parent loop is" << data.Fcrb_v2[i] << std::endl;            
-            std::cout << "data.Fcrb_v2[parent] before update in parent loop is" << data.Fcrb_v2[parent] << std::endl;
+            // std::cout << "Fcrb before update in parent loop is" << Fcrb << std::endl;
+            // std::cout << "data.Fcrb_v2[i] before update in parent loop is" << data.Fcrb_v2[i] << std::endl;            
+            // std::cout << "data.Fcrb_v2[parent] before update in parent loop is" << data.Fcrb_v2[parent] << std::endl;
     
 
         // original expression
@@ -244,8 +254,8 @@ namespace pinocchio
         // alternate expression
           data.Fcrb_v2[parent]  += data.Fcrb_v2[i]+data.Fcrb_v2_tmp.middleCols(0,2*model.nv);
 
-          std::cout << "Fcrb in parent loop is" << Fcrb << std::endl;
-          std::cout << " data.Fcrb_v2[parent] in parent loop is" <<  data.Fcrb_v2[parent] << std::endl;
+        //   std::cout << "Fcrb in parent loop is" << Fcrb << std::endl;
+        //   std::cout << " data.Fcrb_v2[parent] in parent loop is" <<  data.Fcrb_v2[parent] << std::endl;
 
           }
         
@@ -290,9 +300,9 @@ namespace pinocchio
       // std::cout << "i here in third loop is" << i << std::endl;
       // std::cout << "jmodel.idx_v() here in third loop is" << jmodel.idx_v() << std::endl;
       
-      std::cout << "---------- Loop 3 variables here--------------" << std::endl;
-      std::cout << "i is" << i << std::endl;
-      std::cout << "parent is" << parent << std::endl;
+    //   std::cout << "---------- Loop 3 variables here--------------" << std::endl;
+    //   std::cout << "i is" << i << std::endl;
+    //   std::cout << "parent is" << parent << std::endl;
 
       if(parent > 0)
       {
@@ -300,14 +310,25 @@ namespace pinocchio
        // std::cout << "data.Fcrb[parent] in third loop is" << data.Fcrb_v2[parent] << std::endl;
        // std::cout << "data.Fcrb_v2 is" << data.Fcrb_v2 << std::endl;
 
-        std::cout << "data.Pcrb_v2[parent] in third loop is" << data.Pcrb_v2[parent] << std::endl;
+       // std::cout << "data.Pcrb_v2[parent] in third loop is" << data.Pcrb_v2[parent] << std::endl;
 
-        FcrbTmp.block(i-1,0,1,2*model.nv).noalias() = UDinv_cols.transpose() * data.Pcrb_v2[parent];
-        qdd_mat.block(i-1,0,1,2*model.nv).noalias() -=  FcrbTmp.block(i-1,0,1,2*model.nv);
+        // original expression
+
+        // FcrbTmp.block(i-1,0,1,2*model.nv).noalias() = UDinv_cols.transpose() * data.Pcrb_v2[parent];
+        // qdd_mat.block(i-1,0,1,2*model.nv).noalias() -=  FcrbTmp.block(i-1,0,1,2*model.nv);
+
+        // alternate expression
+        
+        FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = UDinv_cols.transpose() * data.Pcrb_v2[parent];
+        qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
 
       }
-          data.Pcrb_v2[i] = J_cols * qdd_mat.block(i-1,0,1,2*model.nv);
-        
+        // original expression
+        //  data.Pcrb_v2[i] = J_cols * qdd_mat.block(i-1,0,1,2*model.nv);
+
+        // alternate expression
+          data.Pcrb_v2[i] = J_cols * qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+
           if(parent > 0)
             data.Pcrb_v2[i] += data.Pcrb_v2[parent];
 
