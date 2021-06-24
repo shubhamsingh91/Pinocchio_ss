@@ -14,7 +14,8 @@
 #include "pinocchio/algorithm/aza.hpp"
 #include "pinocchio/algorithm/azamat.hpp"
 #include "pinocchio/algorithm/azamat_v2.hpp"
-#include "pinocchio/algorithm/azamat_v3.hpp"
+// #include "pinocchio/algorithm/azamat_v3.hpp"
+#include "pinocchio/algorithm/azamat_v4.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -124,7 +125,7 @@ int main(int argc, const char ** argv)
 
 
         if(argc>1) filename = argv[1];
-        bool with_ff = false; // true originally
+        bool with_ff = true; // true originally
 
         if(argc>2)
         {
@@ -272,6 +273,7 @@ int main(int argc, const char ** argv)
     std::cout << "ABA derivatives= \t\t" << time_ABA[4] << endl;
     // std::cout << "ABA derivatives= \t\t"; timer.toc(std::cout,NBT);
     
+
     //-----------------------------------------------------------------//
     // FD partials using AZAmat function here--------------------------//
     //-----------------------------------------------------------------//
@@ -308,17 +310,17 @@ int main(int argc, const char ** argv)
     std::cout << "---------------------------------------" << endl;
 
     //-----------------------------------------------------------------//
-    // FD partials using AZAmat_v3 function here-----------------------//
+    // FD partials using AZAmat_v4 function here-----------------------//
     //-----------------------------------------------------------------//
 
     tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
 
     timer.tic();
     SMOOTH(NBT)
-    azamat_v3(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+    azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
     time_ABA[7] = timer.toc()/NBT;
 
-    std::cout << "IPR using AZA_mat_v3 method is = \t\t" << time_ABA[7] << endl;
+    std::cout << "IPR using AZA_mat_v4 method is = \t\t" << time_ABA[7] << endl;
    // std::cout << "Minvmat_v3 is" << data.Minv_mat_prod_v3 << std::endl;
 
     std::cout <<"---------------------------------------" << endl;
@@ -331,8 +333,8 @@ int main(int argc, const char ** argv)
 
     //eq2 = data.Minv_mat_prod - data.Minv;
 
-    diff_daba_dq2 = daba_dq-data.Minv_mat_prod.middleCols(0,model.nv);
-    diff_daba_dqd2 = daba_dv-data.Minv_mat_prod.middleCols(model.nv,model.nv);
+    diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
+    diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
 
     diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
 
@@ -343,7 +345,7 @@ int main(int argc, const char ** argv)
 
     std::cout << "\n" << endl;
 
-    std::cout << "Norm of difference between mat_v1 and mat_v3 is" << diff_mat1.squaredNorm() << std::endl;
+    std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
 
     // Writing all the timings to the file
     for (int ii=0; ii<7 ; ii++)

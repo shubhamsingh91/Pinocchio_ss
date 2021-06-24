@@ -299,6 +299,9 @@ namespace pinocchio
 
     /// \brief Spatial forces set, used in CRBA and CCRBA
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Fcrb_v2;
+    
+    /// \brief temp variable here
+    Matrix6x Fcrb_v2_tmp;
 
     /// \brief Spatial forces set, used in CRBA and CCRBA
     PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Pcrb_v2;

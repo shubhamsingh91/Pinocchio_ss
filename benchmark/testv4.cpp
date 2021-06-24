@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/azamat.hpp"
 #include "pinocchio/algorithm/azamat_v2.hpp"
 #include "pinocchio/algorithm/azamat_v3.hpp"
+#include "pinocchio/algorithm/azamat_v4.hpp"
 #include "pinocchio/utils/timer.hpp"
 
 #include <iostream>
@@ -40,18 +41,19 @@ int main(int argc, const char ** argv)
     string str_urdf[5];
     int str_int;
 
-   str_int = 0; // integer to change the str_urdf
+   str_int = 2; // integer to change the str_urdf
 
    // cout << "Enter the str_int here" << endl;
    // cin >> str_int;
 
     str_urdf[0] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/double_pendulum_v1.urdf"; // double pendulum
     str_urdf[1] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/40link.urdf"; // 40_link
+    str_urdf[2] = "/home/ss86299/Desktop/test_pinocchio/pinocchio/models/simple_humanoid.urdf"; //simple humanoid
 
     std :: string filename = str_urdf[str_int];
 
     if(argc>1) filename = argv[1];
-    bool with_ff = false; // true originally
+    bool with_ff = true; // true originally
     
     if ((str_int >4)&&(str_int<11))
     {
@@ -118,17 +120,24 @@ int main(int argc, const char ** argv)
   std::cout << "Mat v1 is" << data.Minv_mat_prod << std::endl;
 
 
- timer.tic();
-  SMOOTH(NBT)
-   azamat_v2(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n_v2[_smooth]); // this is not correct
-  std::cout << "IPR using AZA_mat_v2 method is = \t\t"; timer.toc(std::cout,NBT);
+//  timer.tic();
+//   SMOOTH(NBT)
+//    azamat_v2(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n_v2[_smooth]); // this is not correct
+//   std::cout << "IPR using AZA_mat_v2 method is = \t\t"; timer.toc(std::cout,NBT);
 
 // Method-3
 
+  // timer.tic();
+  // SMOOTH(NBT)
+  //   azamat_v3(model,data,qs[_smooth],tau_mat_n2n_v2[_smooth]);
+  // std::cout << "IPR using AZA_mat_v3 method is = \t\t"; timer.toc(std::cout,NBT);
+
+// Method-4
+
   timer.tic();
   SMOOTH(NBT)
-    azamat_v3(model,data,qs[_smooth],tau_mat_n2n_v2[_smooth]);
-  std::cout << "IPR using AZA_mat_v3 method is = \t\t"; timer.toc(std::cout,NBT);
+    azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v2[_smooth]);
+  std::cout << "IPR using AZA_mat_v4 method is = \t\t"; timer.toc(std::cout,NBT);
 
 
 // Comparison of results here
@@ -139,12 +148,12 @@ int main(int argc, const char ** argv)
 
   std::cout <<"------------------------------" << std::endl;
   std::cout << "\n " << std::endl; 
-  std::cout << "Mat v1 is" << data.Minv_mat_prod << std::endl;
+ // std::cout << "Mat v1 is" << data.Minv_mat_prod << std::endl;
   std::cout <<"------------------------------" << std::endl;
   std::cout << "\n " << std::endl; 
-  std::cout << "Mat v3 is" << data.Minv_mat_prod_v3 << std::endl;
+  //std::cout << "Mat v3 is" << data.Minv_mat_prod_v3 << std::endl;
   std::cout <<"------------------------------" << std::endl;
-  std::cout << "Difference matrix here is" << diff_mat << std::endl;
+ // std::cout << "Difference matrix here is" << diff_mat << std::endl;
 
   std::cout << "Norm of the difference matrix is " << diff_mat.squaredNorm() << std::endl;
 

@@ -84,6 +84,7 @@ namespace pinocchio
   , Fcrb((std::size_t)model.njoints,Matrix6x::Zero(6,model.nv))
   , Fcrb_v2((std::size_t)model.njoints,Matrix6x::Zero(6,2*model.nv)) // new variable
   , Pcrb_v2((std::size_t)model.njoints,Matrix6x::Zero(6,2*model.nv)) // new variable  
+  , Fcrb_v2_tmp(Matrix6x::Zero(6,2*model.nv)) // new variable
   , lastChild((std::size_t)model.njoints,-1)
   , nvSubtree((std::size_t)model.njoints,-1)
   , start_idx_v_fromRow((std::size_t)model.nv,-1)
