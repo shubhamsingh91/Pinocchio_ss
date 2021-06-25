@@ -16,6 +16,7 @@
 #include "pinocchio/algorithm/azamat_v2.hpp"
 #include "pinocchio/algorithm/azamat_v3.hpp"
 #include "pinocchio/algorithm/azamat_v4.hpp"
+#include "pinocchio/algorithm/aba_v2.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -37,21 +38,24 @@ int main(int argc, const char ** argv)
   PinocchioTicToc timer(PinocchioTicToc::US);
 
   #ifdef NDEBUG
-   int NBT = 1; // 50000 initially
+   int NBT = 10000; // 50000 initially
   #else
      int NBT = 1;
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
   #endif
 
-     // int n_vec[]={2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
-      
+     int n_vec[]={2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
+     
+     // for bf=5
+    //  int n_vec[]={5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
+
      // int n_vec[]={9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,220,250,280,300,320,350,380,400,420,450,480,500};
 
   
    // int n_vec[]={220,250,280,300,320,350,380,400,420,450,480,500};
    //  int n_vec[]={320,350,380,400,420,450,480,500};
 
-      int n_vec[]={3};
+   //  int n_vec[]={3};
 
     // for (int jj=0; jj<19; jj++)
     // {
@@ -59,16 +63,16 @@ int main(int argc, const char ** argv)
     //   // cout << "n_vec is " << n_vec[jj] << endl;
     // }
 
-    int bf=2; // branching factor
+    int bf=5; // branching factor
 
-  for(int jj=0; jj<1; jj++){
+  for(int jj=0; jj<45; jj++){
 
 
-      std::cout << "Setting model" << std::endl;
+     // std::cout << "Setting model" << std::endl;
 
         Model model;
 
-      std::cout << "Setting strings" << std::endl;
+     // std::cout << "Setting strings" << std::endl;
 
         string str_urdf="", str_file_ext ,n_str,n_bf;
         string robot_name="";
@@ -107,12 +111,12 @@ int main(int argc, const char ** argv)
         str_urdf.append(robot_name);
         str_urdf.append(".urdf"); 
     
-        cout <<"str_urdf is "<< str_urdf << endl;
+      //  cout <<"str_urdf is "<< str_urdf << endl;
 
         std :: string filename = str_urdf;
-
-        // Opening a file to write to it
-          std::cout << "Opening file" << std::endl;
+        
+       // Opening a file to write to it
+       //   std::cout << "Opening file" << std::endl;
     
         string filewrite="";
 
@@ -150,7 +154,7 @@ int main(int argc, const char ** argv)
         std::cout << "nv = " << model.nv << std::endl;
         cout << "Model is " << robot_name << endl;
 
-        std::cout << "Setting data here" << std::endl;
+    //  std::cout << "Setting data here" << std::endl;
 
         Data data(model);
         VectorXd qmax = Eigen::VectorXd::Ones(model.nq);
@@ -183,6 +187,10 @@ int main(int argc, const char ** argv)
 
     double time_ABA[8];
 
+    //------------------------------------------//
+    //-------------------- ABA------------------//
+    //------------------------------------------//
+
     timer.tic();
     SMOOTH(NBT)
     aba(model,data,qs[_smooth],qdots[_smooth],taus[_smooth]);
@@ -190,6 +198,10 @@ int main(int argc, const char ** argv)
 
    // std::cout << "ABA= \t\t"; timer.toc(std::cout,NBT);
     std::cout << "ABA= \t\t" <<  time_ABA[0] << endl;
+
+    //------------------------------------------//
+    //-------------------- Minv-----------------//
+    //------------------------------------------//
 
     timer.tic();
     SMOOTH(NBT)
@@ -273,7 +285,22 @@ int main(int argc, const char ** argv)
     std::cout << "ABA derivatives= \t\t" << time_ABA[4] << endl;
     // std::cout << "ABA derivatives= \t\t"; timer.toc(std::cout,NBT);
     
+    //-----------------------------------------------------------------//
+    // FD partials using DMM here -------------------------------------//
+    //-----------------------------------------------------------------//
+   
+    MatrixXd aba_partial_dq(MatrixXd::Zero(model.nv,model.nv));
+    MatrixXd aba_partial_dv(MatrixXd::Zero(model.nv,model.nv));
+ 
+    timer.tic();
+    for (int kk=0; kk<NBT; kk++)
+    {
+        aba_partial_dq = -data.Minv*drnea_dq;
+        aba_partial_dv = -data.Minv*drnea_dv;
+    }
+    time_ABA[6] = timer.toc()/NBT; // DMM timing
 
+    std::cout << "DMM= \t\t" << time_ABA[6] << std::endl;
     //-----------------------------------------------------------------//
     // FD partials using AZAmat function here--------------------------//
     //-----------------------------------------------------------------//
@@ -299,35 +326,58 @@ int main(int argc, const char ** argv)
     // FD partials using AZAmat_v2 function here-----------------------//
     //-----------------------------------------------------------------//
 
-    tau_mat_n2n_v2[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+    // tau_mat_n2n_v2[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
 
-    timer.tic();
-    SMOOTH(NBT)
-    azamat_v2(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n_v2[_smooth]);
-    time_ABA[6] = timer.toc()/NBT;
+    // timer.tic();
+    // SMOOTH(NBT)
+    // azamat_v2(model,data,qs[_smooth],qdots[_smooth],tau_mat_n2n_v2[_smooth]);
+    // time_ABA[6] = timer.toc()/NBT;
 
-    std::cout << "IPR using AZA_mat_v2 method is = \t\t" << time_ABA[6] << endl;
-    std::cout << "---------------------------------------" << endl;
+    // std::cout << "IPR using AZA_mat_v2 method is = \t\t" << time_ABA[6] << endl;
+    // std::cout << "---------------------------------------" << endl;
 
     //-----------------------------------------------------------------//
     // FD partials using AZAmat_v3/4 function here-----------------------//
     //-----------------------------------------------------------------//
 
-    tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+//     tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
 
-    std::cout<< "tau_mat_n2n_v3 is" << tau_mat_n2n_v3[0] << std::endl;
+//    // std::cout<< "tau_mat_n2n_v3 is" << tau_mat_n2n_v3[0] << std::endl;
+
+//     timer.tic();
+//     SMOOTH(NBT)
+//     azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+//     time_ABA[7] = timer.toc()/NBT;
+
+//     std::cout << "IPR using AZA_mat_v4 method is = \t\t" << time_ABA[7] << endl;
+    
+//     //std::cout << "Minvmat_v3 is" << data.Minv_mat_prod_v3 << std::endl;
+
+//     std::cout <<"---------------------------------------" << endl;
+
+    //------------------------------------------------//
+    //-------------------- Minv+aza_mat_v4------------//
+    //------------------------------------------------//
+
+    tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
 
     timer.tic();
     SMOOTH(NBT)
-    azamat_v4(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+    {
+        computeMinverse_v2(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+    }
     time_ABA[7] = timer.toc()/NBT;
 
-    std::cout << "IPR using AZA_mat_v4 method is = \t\t" << time_ABA[7] << endl;
-   // std::cout << "Minvmat_v3 is" << data.Minv_mat_prod_v3 << std::endl;
+    //std::cout << "Minv =\t\t"; timer.toc(std::cout,NBT);
+    std::cout << "Minv_v2 =\t\t" <<  time_ABA[7]<< endl;
 
-    std::cout <<"---------------------------------------" << endl;
+    std::cout <<"---------------------------------------------------" << endl;
 
-    // Difference matrix calculations here
+
+    //------------------------------------------------//
+    // Difference matrix calculations here-----------//
+    //----------------------------------------------//
+
     
     MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
     MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
@@ -342,15 +392,15 @@ int main(int argc, const char ** argv)
 
     std::cout << "------------------------------" << std::endl;
 
-    std::cout << "Norm of the difference matrix for AZAmat FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
-    std::cout << "Norm of the difference matrix for AZAmat FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
+    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
+    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
 
     std::cout << "\n" << endl;
 
     std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
 
     // Writing all the timings to the file
-    for (int ii=0; ii<7 ; ii++)
+    for (int ii=0; ii<8 ; ii++)
     {
         file1 << time_ABA[ii] << "\n" << endl;
     }

@@ -103,19 +103,20 @@ namespace pinocchio
       typedef typename Model::JointIndex JointIndex;
       
       const JointIndex & i = jmodel.id();
-      jmodel.calc(jdata.derived(),q.derived());
       
-      const JointIndex & parent = model.parents[i];
-      data.liMi[i] = model.jointPlacements[i] * jdata.M();
+    //     jmodel.calc(jdata.derived(),q.derived()); // already done in RNEAderivF
       
-      if (parent>0)
-        data.oMi[i] = data.oMi[parent] * data.liMi[i];
-      else
-        data.oMi[i] = data.liMi[i];
+    //    const JointIndex & parent = model.parents[i];
+    //     data.liMi[i] = model.jointPlacements[i] * jdata.M(); // already done in RNEAderivF
       
-      typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
-      ColsBlock J_cols = jmodel.jointCols(data.J);
-      J_cols = data.oMi[i].act(jdata.S());
+    //       if (parent>0)
+    //         data.oMi[i] = data.oMi[parent] * data.liMi[i];  // already done in RNEAderivF
+    //       else
+    //         data.oMi[i] = data.liMi[i];   // already done in RNEAderivF
+      
+        //   typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
+        //   ColsBlock J_cols = jmodel.jointCols(data.J);
+        //   J_cols = data.oMi[i].act(jdata.S());
       
       data.Yaba[i] = model.inertias[i].matrix();
     }
@@ -146,8 +147,8 @@ namespace pinocchio
       
       typename Inertia::Matrix6 & Ia = data.Yaba[i];
       typename Data::RowMatrixXs & qdd_mat = data.Minv_mat_prod_v3;
-      typename Data::Matrix6x & Fcrb = data.Fcrb_v2[0]; // first element of the array
-      typename Data::Matrix6x & FcrbTmp = data.Fcrb_v2.back(); // last element of the array
+    //    typename Data::Matrix6x & Fcrb = data.Fcrb_v2[0]; // first element of the array
+    //    typename Data::Matrix6x & FcrbTmp = data.Fcrb_v2.back(); // last element of the array
 
       
     //   std::cout << "---------- Loop 2 variables here--------------" << std::endl;
@@ -246,13 +247,17 @@ namespace pinocchio
             // std::cout << "data.Fcrb_v2[parent] before update in parent loop is" << data.Fcrb_v2[parent] << std::endl;
     
 
-        // original expression
+         // original expression
          // Fcrb.middleCols(0,2*model.nv)  += FcrbTmp.middleCols(0,2*model.nv);
 
-          Fcrb.middleCols(0,2*model.nv)  += data.Fcrb_v2_tmp.middleCols(0,2*model.nv);
+         // Fcrb.middleCols(0,2*model.nv)  += data.Fcrb_v2_tmp.middleCols(0,2*model.nv);
 
         // alternate expression
-          data.Fcrb_v2[parent]  += data.Fcrb_v2[i]+data.Fcrb_v2_tmp.middleCols(0,2*model.nv);
+         // data.Fcrb_v2[parent]  += data.Fcrb_v2[i]+data.Fcrb_v2_tmp.middleCols(0,2*model.nv);
+
+        // another alternate expression
+          data.Fcrb_v2[parent]  += data.Fcrb_v2[i]+data.Fcrb_v2_tmp;
+
 
         //   std::cout << "Fcrb in parent loop is" << Fcrb << std::endl;
         //   std::cout << " data.Fcrb_v2[parent] in parent loop is" <<  data.Fcrb_v2[parent] << std::endl;
@@ -287,7 +292,6 @@ namespace pinocchio
       const JointIndex & i = jmodel.id();
       const JointIndex & parent = model.parents[i];
       typename Data::RowMatrixXs & qdd_mat = data.Minv_mat_prod_v3;
-      typename Data::Matrix6x & FcrbTmp = data.Fcrb_v2.back();
       
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
       ColsBlock UDinv_cols = jmodel.jointCols(data.UDinv);
@@ -319,8 +323,17 @@ namespace pinocchio
 
         // alternate expression
         
-        FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = UDinv_cols.transpose() * data.Pcrb_v2[parent];
-        qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+        // FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() = UDinv_cols.transpose() * data.Pcrb_v2[parent];
+        // qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  FcrbTmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+
+        // another alternate expression
+
+        // data.Fcrb_v3_tmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv) = UDinv_cols.transpose() * data.Pcrb_v2[parent];
+       // qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  data.Fcrb_v3_tmp.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv);
+
+        // another_v2 alternate expression
+
+        qdd_mat.block(jmodel.idx_v(),0,jmodel.nv(),2*model.nv).noalias() -=  UDinv_cols.transpose() * data.Pcrb_v2[parent];;
 
       }
         // original expression
@@ -357,7 +370,7 @@ namespace pinocchio
                  typename Pass1::ArgsType(model,data,q.derived()));
     }
     
-    data.Fcrb_v2[0].setZero();
+    //data.Fcrb_v2[0].setZero(); // not needed anymore now
     
     //std::cout << "--------------------------------------------" << std::endl;
     //std::cout << "data.Fcrb_v2 [0] is " <<  data.Fcrb_v2[0] << std::endl;
