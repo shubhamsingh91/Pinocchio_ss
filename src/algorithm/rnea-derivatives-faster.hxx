@@ -57,9 +57,15 @@ namespace pinocchio
       
       data.liMi[i] = model.jointPlacements[i]*jdata.M();
 
+      data.v[i] = jdata.v(); // adding v in joint frame
+
       if(parent > 0)
       {
         data.oMi[i] = data.oMi[parent] * data.liMi[i];
+
+        data.v[i] += data.liMi[i].actInv(data.v[parent]); // v in joint frame
+        data.a[i] += data.liMi[i].actInv(data.a[parent]); // a in joint frame
+
         ov = data.ov[parent];
         oa = data.oa[parent];
       }
@@ -69,7 +75,9 @@ namespace pinocchio
         ov.setZero();
         oa = -model.gravity;
       }
-  
+
+        data.oh[i] = data.oYcrb[i] * ov; // spatial momenta in world frame- not needed
+
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
       ColsBlock J_cols = jmodel.jointCols(data.J);
       ColsBlock dJ_cols = jmodel.jointCols(data.dJ);
@@ -91,7 +99,8 @@ namespace pinocchio
       motionSet::motionAction( vJ ,J_cols, vdJ_cols );
       vdJ_cols.noalias() += 2*dJ_cols;
 
-      // velocity and accelaration finishing
+      // velocity and accelaration finishing - in ground frame
+    
       ov += vJ;
       oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
@@ -151,7 +160,10 @@ namespace pinocchio
       MatrixType1 & rnea_partial_dq_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType1,rnea_partial_dq);
       MatrixType2 & rnea_partial_dv_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType2,rnea_partial_dv);
       MatrixType3 & rnea_partial_da_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType3,rnea_partial_da);
-
+   
+      // tau -- added joint torques here
+      jmodel.jointVelocitySelector(data.tau).noalias() = J_cols.transpose()*data.of[i].toVector();
+      
       // now tmp2 is set
       motionSet::inertiaAction(oYcrb,J_cols,tmp1);
 
@@ -164,20 +176,32 @@ namespace pinocchio
 
       motionSet::coriolisTransposeAction(oBcrb,J_cols,tmp4);
 
+      // std::cout<<"----------------------------" << std::endl;
+      // std::cout << "jmodel.idx_v() is" << jmodel.idx_v() << std::endl;
+      // std::cout << "jmodel.nv() is" << jmodel.nv() << std::endl;
+      // std::cout << "data.nvSubtree[i] is" << data.nvSubtree[i] << std::endl;
+      // std::cout<<"----------------------------" << std::endl;
+
       rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
         = J_cols.transpose()*data.pmw_tmp3.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
+      if(data.nvSubtree[i]!=jmodel.nv())
+      {
       rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
         = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*ddJ_cols 
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*dJ_cols;
+      }
 
       rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
         = J_cols.transpose()*data.pmw_tmp2.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 
+      if(data.nvSubtree[i]!=jmodel.nv())
+      {
       rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
         = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*vdJ_cols
           + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*J_cols;
-      
+      }
+
       rnea_partial_da_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias() =
         J_cols.transpose()*data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
 

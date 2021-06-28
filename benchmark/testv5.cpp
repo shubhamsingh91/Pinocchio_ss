@@ -195,6 +195,27 @@ int main(int argc, const char ** argv)
     time_ABA[2] = timer.toc()/NBT; // RNEAF timing
     std::cout << "RNEA derivativeF= \t\t" << time_ABA[2] << std::endl;
 
+    //-- comparing the RNEA and RNEA F derivatives here
+
+    std::cout << "----------------------------------------------" <<std::endl;
+    std::cout << "comparison of RNEA derivatives here" << std::endl;
+    std::cout << "difference in dtau_dq is" << (drnea2_dq-drnea_dq).squaredNorm() << std::endl;
+    std::cout << "difference in dtau_dqd is" << (drnea2_dv-drnea_dv).squaredNorm() << std::endl;
+    std::cout << "----------------------------------------------" <<std::endl;
+
+    //-----------------------------------------------------//
+    //------------- Minv_v2 with AZAmat_v4 here------------//
+    //-----------------------------------------------------//
+  
+     tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
+
+    timer.tic();
+    SMOOTH(NBT)
+    {
+       computeMinverse_v2(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
+    }
+    time_ABA[6] = timer.toc()/NBT; // Minv timing
+    std::cout << "Minv_v2 =\t\t" <<  time_ABA[6]<< std::endl;
 
     //-----------------------------------------------------//
     //------------- Minv here------------------------------//
@@ -224,19 +245,7 @@ int main(int argc, const char ** argv)
     }
 
 
-    //-----------------------------------------------------//
-    //------------- Minv_v2 with AZAmat_v4 here------------//
-    //-----------------------------------------------------//
-  
-     tau_mat_n2n_v3[0] << -drnea_dq,-drnea_dv; // concatenating partial wrt q and qdot
-
-    timer.tic();
-    SMOOTH(NBT)
-    {
-       computeMinverse_v2(model,data,qs[_smooth],tau_mat_n2n_v3[_smooth]);
-    }
-    time_ABA[6] = timer.toc()/NBT; // Minv timing
-    std::cout << "Minv_v2 =\t\t" <<  time_ABA[6]<< std::endl;
+ 
 
 
 
