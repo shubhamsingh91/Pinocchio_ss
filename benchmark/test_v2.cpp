@@ -380,27 +380,30 @@ int main(int argc, const char ** argv)
     //----------------------------------------------//
 
     
-    MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
-    MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
-    MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
+    // MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
+    // MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
+    // MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
 
-    //eq2 = data.Minv_mat_prod - data.Minv;
+    // //eq2 = data.Minv_mat_prod - data.Minv;
 
-    diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
-    diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
+    // diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
+    // diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
 
-    diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
+    // diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
 
-    std::cout << "------------------------------" << std::endl;
+    // std::cout << "------------------------------" << std::endl;
 
-    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
-    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
+    // std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
+    // std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
 
-    std::cout << "\n" << endl;
+    // std::cout << "\n" << endl;
 
-    std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
+    // std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
 
+    //------------------------------------------------//
     // Writing all the timings to the file
+    //------------------------------------------------//
+
     for (int ii=0; ii<8 ; ii++)
     {
         file1 << time_ABA[ii] << "\n" << endl;

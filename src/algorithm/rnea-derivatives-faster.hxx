@@ -13,7 +13,6 @@
 namespace pinocchio
 {
   
-  
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2>
   struct ComputeRNEADerivativesFasterForwardStep
   : public fusion::JointUnaryVisitorBase< ComputeRNEADerivativesFasterForwardStep<Scalar,Options,JointCollectionTpl,ConfigVectorType,TangentVectorType1,TangentVectorType2> >
@@ -51,20 +50,16 @@ namespace pinocchio
       Motion & oa = data.oa[i];
       Motion & vJ = data.vJ[i];
       const Inertia & Y = model.inertias[i];
-      
+      double temp1[6];
 
       jmodel.calc(jdata.derived(),q.derived(),v.derived());
       
       data.liMi[i] = model.jointPlacements[i]*jdata.M();
 
-      data.v[i] = jdata.v(); // adding v in joint frame
 
       if(parent > 0)
       {
         data.oMi[i] = data.oMi[parent] * data.liMi[i];
-
-        data.v[i] += data.liMi[i].actInv(data.v[parent]); // v in joint frame
-        data.a[i] += data.liMi[i].actInv(data.a[parent]); // a in joint frame
 
         ov = data.ov[parent];
         oa = data.oa[parent];
@@ -75,8 +70,6 @@ namespace pinocchio
         ov.setZero();
         oa = -model.gravity;
       }
-
-        data.oh[i] = data.oYcrb[i] * ov; // spatial momenta in world frame- not needed
 
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
       ColsBlock J_cols = jmodel.jointCols(data.J);
@@ -101,8 +94,22 @@ namespace pinocchio
 
       // velocity and accelaration finishing - in ground frame
     
+     // data.temp_vec = jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() ;
+
+    //  std::cout << "temp_vec is" <<   model.jointVelocitySelector(a)   << std::endl;
+
       ov += vJ;
-      oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
+      oa += (ov ^ vJ) + data.oMi[i].act(jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
+            
+      //data.a[i] = data.oMi[i].actInv(oa); // a in joint frame- this one is not working 
+
+      data.v[i] = data.oMi[i].actInv(ov); // v in joint frame
+   
+      data.a[i] = jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c()  + (data.v[i] ^ jdata.v()); // a in joint frame
+      if(parent > 0)
+      {
+        data.a[i] += data.liMi[i].actInv(data.a[parent]);
+      }
 
       // Composite rigid body inertia
       Inertia & oY =  data.oYcrb[i] ;
@@ -110,7 +117,8 @@ namespace pinocchio
       oY = data.oMi[i].act(model.inertias[i]);
       data.oh[i] = oY * ov;
       data.of[i] = oY * oa + ov.cross(data.oh[i]);
-      data.oBcrb[i] = Coriolis(oY, ov );
+      data.oBcrb[i] = Coriolis(oY, ov);
+
     }
   };
   

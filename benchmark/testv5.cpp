@@ -178,6 +178,13 @@ int main(int argc, const char ** argv)
    
     std::cout << "RNEA derivatives= \t\t" <<  time_ABA[1] << std::endl;
 
+  for( int ll=0; ll<model.nv ; ll++)
+  {
+    std::cout << "tau[i] is" << data.tau[ll] <<std::endl;
+    std::cout << "v[i] is" << data.v[ll] <<std::endl;
+    std::cout << "a[i] is" << data.a[ll] << std::endl;
+  }
+
     //----------------------------------------------------//
     // Compute RNEA derivatives faster--------------------//
     //----------------------------------------------------//
@@ -195,6 +202,12 @@ int main(int argc, const char ** argv)
     time_ABA[2] = timer.toc()/NBT; // RNEAF timing
     std::cout << "RNEA derivativeF= \t\t" << time_ABA[2] << std::endl;
 
+  //   for( int ll=0; ll<model.nv ; ll++)
+  // {
+  //   std::cout << "tau[i] is" << data.tau[ll] <<std::endl;
+  //   std::cout << "v[i] is" << data.v[ll] <<std::endl;
+  //   std::cout << "a[i] is" << data.a[ll] << std::endl;
+  // }
     //-- comparing the RNEA and RNEA F derivatives here
 
     std::cout << "----------------------------------------------" <<std::endl;

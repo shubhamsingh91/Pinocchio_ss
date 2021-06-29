@@ -57,6 +57,7 @@ namespace pinocchio
   , ddq_new_v2(MatrixXs::Zero(model.nv,2*model.nv)) // new variable  
   , pa_v2(Matrix6x::Zero(6,2*model.nv))
   , pa_v3(Matrix6x::Zero(6,2*model.nv))
+  , temp_vec(VectorXs::Zero(6))
   // end new stuff
   , C(MatrixXs::Zero(model.nv,model.nv))
   , dHdq(Matrix6x::Zero(6,model.nv))

@@ -187,6 +187,8 @@ namespace pinocchio
     /// \brief tau_mat_v2
     RowMatrixXs tau_mat_v2;
 
+   /// \brief temp_vec
+    VectorXs temp_vec;
 
     /// \brief Minv_mat_prod_v3
     RowMatrixXs Minv_mat_prod_v3;
