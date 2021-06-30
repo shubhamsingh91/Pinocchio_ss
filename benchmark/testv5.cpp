@@ -36,14 +36,14 @@ int main(int argc, const char ** argv)
   PinocchioTicToc timer(PinocchioTicToc::US);
 
   #ifdef NDEBUG
-   int NBT; // 50000 initially
+   int NBT= 100*1000; // 50000 initially
   #else
      int NBT = 1;
     std::cout << "(the time score in debug mode is not relevant) " << std::endl;
   #endif
 
-    std::cout << "Enter NBT" << std::endl;
-    cin >> NBT;
+    // std::cout << "Enter NBT" << std::endl;
+    // cin >> NBT;
 
     Model model;
 
@@ -183,6 +183,7 @@ int main(int argc, const char ** argv)
   //   std::cout << "tau[i] is" << data.tau[ll] <<std::endl;
   //   std::cout << "v[i] is" << data.v[ll] <<std::endl;
   //   std::cout << "a[i] is" << data.a[ll] << std::endl;
+  
   // }
 
     //----------------------------------------------------//
@@ -208,13 +209,15 @@ int main(int argc, const char ** argv)
   //   std::cout << "v[i] is" << data.v[ll] <<std::endl;
   //   std::cout << "a[i] is" << data.a[ll] << std::endl;
   // }
+
+
     //-- comparing the RNEA and RNEA F derivatives here
 
-    std::cout << "----------------------------------------------" <<std::endl;
-    std::cout << "comparison of RNEA derivatives here" << std::endl;
-    std::cout << "difference in dtau_dq is" << (drnea2_dq-drnea_dq).squaredNorm() << std::endl;
-    std::cout << "difference in dtau_dqd is" << (drnea2_dv-drnea_dv).squaredNorm() << std::endl;
-    std::cout << "----------------------------------------------" <<std::endl;
+    // std::cout << "----------------------------------------------" <<std::endl;
+    // std::cout << "comparison of RNEA derivatives here" << std::endl;
+    // std::cout << "difference in dtau_dq is" << (drnea2_dq-drnea_dq).squaredNorm() << std::endl;
+    // std::cout << "difference in dtau_dqd is" << (drnea2_dv-drnea_dv).squaredNorm() << std::endl;
+    // std::cout << "----------------------------------------------" <<std::endl;
 
     //-----------------------------------------------------//
     //------------- Minv_v2 with AZAmat_v4 here------------//
@@ -256,11 +259,6 @@ int main(int argc, const char ** argv)
               }
           }
     }
-
-
- 
-
-
 
     //-----------------------------------------------------------------//
     // FD partials using AZAmat_v3/4 function here---------------------//
@@ -334,46 +332,51 @@ int main(int argc, const char ** argv)
     std::cout << "---------------------------------------" << endl;
 
 
-
-// Comparison of results here
-
-
-    MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
-    MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
-    MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
-
-    MatrixXd diff_daba_dq3(MatrixXd::Zero(model.nv,model.nv));
-    MatrixXd diff_daba_dqd3(MatrixXd::Zero(model.nv,model.nv));
-
-    // comparison of ABA derivs with DMM result
-    diff_daba_dq3 = daba_dq-aba_partial_dq;
-    diff_daba_dqd3 = daba_dv-aba_partial_dv;
+  //---------------------------------------------------//
+  //---------Comparison of results here----------------//
+  //---------------------------------------------------//
 
 
-    // comparison of ABA derivs with AZAMAT_v4
+    // MatrixXd diff_daba_dq2(MatrixXd::Zero(model.nv,model.nv));
+    // MatrixXd diff_daba_dqd2(MatrixXd::Zero(model.nv,model.nv));
+    // MatrixXd diff_mat1(MatrixXd::Zero(model.nv,2*model.nv));
 
-    diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
-    diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
+    // MatrixXd diff_daba_dq3(MatrixXd::Zero(model.nv,model.nv));
+    // MatrixXd diff_daba_dqd3(MatrixXd::Zero(model.nv,model.nv));
 
-    diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
+    // // comparison of ABA derivs with DMM result
+    // diff_daba_dq3 = daba_dq-aba_partial_dq;
+    // diff_daba_dqd3 = daba_dv-aba_partial_dv;
 
 
+    // // comparison of ABA derivs with AZAMAT_v4
 
-    std::cout << "------------------------------" << std::endl;
+    // diff_daba_dq2 = daba_dq-data.Minv_mat_prod_v3.middleCols(0,model.nv);
+    // diff_daba_dqd2 = daba_dv-data.Minv_mat_prod_v3.middleCols(model.nv,model.nv);
 
-    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
-    std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
+    // diff_mat1 = data.Minv_mat_prod - data.Minv_mat_prod_v3;
 
-    std::cout << "\n" << endl;
+    // std::cout << "------------------------------" << std::endl;
 
-    std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
+    // std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq2.squaredNorm() << std::endl;
+    // std::cout << "Norm of the difference matrix for AZAmat_v4 FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd2.squaredNorm() << std::endl;
 
-    std::cout << "------------------------------" << std::endl;
+    // std::cout << "\n" << endl;
 
-    std::cout << "Norm of the difference matrix for DMM FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq3.squaredNorm() << std::endl;
-    std::cout << "Norm of the difference matrix for DMM FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd3.squaredNorm() << std::endl;
+    // std::cout << "Norm of difference between mat_v1 and mat_v4 is" << diff_mat1.squaredNorm() << std::endl;
 
-    std::cout << "\n" << endl;
+    // std::cout << "------------------------------" << std::endl;
+
+    // std::cout << "Norm of the difference matrix for DMM FD partial wrt q from orig FD partial wrt q is " << diff_daba_dq3.squaredNorm() << std::endl;
+    // std::cout << "Norm of the difference matrix for DMM FD partial wrt qd from orig FD partial wrt qd is " << diff_daba_dqd3.squaredNorm() << std::endl;
+
+    // std::cout << "\n" << endl;
+
+
+    //--------------------------------------------------//
+    //----------Writing to file ------------------------//
+    //--------------------------------------------------//
+
 
     // Writing all the timings to the file
     for (int ii=0; ii<9 ; ii++)

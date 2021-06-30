@@ -58,6 +58,8 @@ namespace pinocchio
   , pa_v2(Matrix6x::Zero(6,2*model.nv))
   , pa_v3(Matrix6x::Zero(6,2*model.nv))
   , temp_vec(VectorXs::Zero(6))
+   , oa_temp((std::size_t)model.njoints,Motion::Zero()) 
+  , a_v2((std::size_t)model.njoints,Motion::Zero())
   // end new stuff
   , C(MatrixXs::Zero(model.nv,model.nv))
   , dHdq(Matrix6x::Zero(6,model.nv))
@@ -102,10 +104,10 @@ namespace pinocchio
   // other new stuff
   , ddJ(Matrix6x::Zero(6,model.nv))
   , vdJ(Matrix6x::Zero(6,model.nv))
-  , pmw_tmp1(Matrix6x::Zero(6,model.nv))
-  , pmw_tmp2(Matrix6x::Zero(6,model.nv))
-  , pmw_tmp3(Matrix6x::Zero(6,model.nv))
-  , pmw_tmp4(Matrix6x::Zero(6,model.nv))
+  , Ftmp1(Matrix6x::Zero(6,model.nv))
+  , Ftmp2(Matrix6x::Zero(6,model.nv))
+  , Ftmp3(Matrix6x::Zero(6,model.nv))
+  , Ftmp4(Matrix6x::Zero(6,model.nv))
 
   // end other new stuff
   , dVdq(Matrix6x::Zero(6,model.nv))

@@ -7,6 +7,7 @@
 
 #include "pinocchio/multibody/visitor.hpp"
 #include "pinocchio/algorithm/check.hpp"
+#include <iostream>
 
 namespace pinocchio
 {
@@ -247,6 +248,7 @@ namespace pinocchio
       oa = data.oMi[i].act(data.a[i]);
       oa_gf = oa - model.gravity; // add gravity contribution
       
+
       data.oh[i] = data.oYcrb[i] * ov;
       data.of[i] = data.oYcrb[i] * oa_gf + ov.cross(data.oh[i]);
       

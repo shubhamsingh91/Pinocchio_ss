@@ -94,10 +94,18 @@ namespace pinocchio
     
     /// \brief Vector of joint accelerations expressed at the centers of the joints frames.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a;
-    
+
+       /// \brief Vector of joint accelerations expressed at the centers of the joints frames.
+    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_v2;
+
     /// \brief Vector of joint accelerations expressed at the origin of the world.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa;
-    
+
+      
+    /// \brief Vector of joint accelerations expressed at the origin of the world- temp variable
+    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_temp;
+
+
     /// \brief Vector of joint accelerations due to the gravity field.
     PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_gf;
 
@@ -357,11 +365,11 @@ namespace pinocchio
     Matrix6x vdJ;
 
     /// \brief 
-    Matrix6x pmw_tmp1;
-    Matrix6x pmw_tmp2;
-    Matrix6x pmw_tmp3;
-    Matrix6x pmw_tmp4;
-
+    Matrix6x Ftmp1;
+    Matrix6x Ftmp2;
+    Matrix6x Ftmp3;
+    Matrix6x Ftmp4;
+    
     /// \brief Variation of the spatial velocity set with respect to the joint configuration.
     Matrix6x dVdq;
     

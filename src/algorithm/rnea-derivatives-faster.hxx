@@ -13,6 +13,7 @@
 namespace pinocchio
 {
   
+  
   template<typename Scalar, int Options, template<typename,int> class JointCollectionTpl, typename ConfigVectorType, typename TangentVectorType1, typename TangentVectorType2>
   struct ComputeRNEADerivativesFasterForwardStep
   : public fusion::JointUnaryVisitorBase< ComputeRNEADerivativesFasterForwardStep<Scalar,Options,JointCollectionTpl,ConfigVectorType,TangentVectorType1,TangentVectorType2> >
@@ -38,29 +39,21 @@ namespace pinocchio
     {
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Motion Motion;
-      typedef typename Data::Matrix6 Matrix6;
-      typedef typename Data::Matrix3 Matrix3;
-      typedef typename Data::Vector3 Vector3;
       typedef typename Data::Inertia Inertia;
-      typedef typename Symmetric3::AlphaSkewSquare AlphaSkewSquare;
 
       const JointIndex & i = jmodel.id();
       const JointIndex & parent = model.parents[i];
       Motion & ov = data.ov[i];
       Motion & oa = data.oa[i];
       Motion & vJ = data.vJ[i];
-      const Inertia & Y = model.inertias[i];
-      double temp1[6];
 
       jmodel.calc(jdata.derived(),q.derived(),v.derived());
       
       data.liMi[i] = model.jointPlacements[i]*jdata.M();
 
-
       if(parent > 0)
       {
         data.oMi[i] = data.oMi[parent] * data.liMi[i];
-
         ov = data.ov[parent];
         oa = data.oa[parent];
       }
@@ -70,7 +63,7 @@ namespace pinocchio
         ov.setZero();
         oa = -model.gravity;
       }
-
+  
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<typename Data::Matrix6x>::Type ColsBlock;
       ColsBlock J_cols = jmodel.jointCols(data.J);
       ColsBlock dJ_cols = jmodel.jointCols(data.dJ);
@@ -78,7 +71,7 @@ namespace pinocchio
       ColsBlock vdJ_cols = jmodel.jointCols(data.vdJ);
 
       // J and vJ
-      J_cols = data.oMi[i].act(jdata.S());
+      J_cols.noalias() = data.oMi[i].act(jdata.S());
       vJ     = data.oMi[i].act( jdata.v() );
 
       // dJ
@@ -92,33 +85,21 @@ namespace pinocchio
       motionSet::motionAction( vJ ,J_cols, vdJ_cols );
       vdJ_cols.noalias() += 2*dJ_cols;
 
-      // velocity and accelaration finishing - in ground frame
-    
-     // data.temp_vec = jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() ;
-
-    //  std::cout << "temp_vec is" <<   model.jointVelocitySelector(a)   << std::endl;
-
+      // velocity and accelaration finishing
       ov += vJ;
-      oa += (ov ^ vJ) + data.oMi[i].act(jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
-            
-      //data.a[i] = data.oMi[i].actInv(oa); // a in joint frame- this one is not working 
+      oa += (ov ^ vJ) + data.oMi[i].act( jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c() );
 
+     // joint frame variables here
+
+      data.a[i] = data.oMi[i].actInv(oa+model.gravity); // a in joint frame
       data.v[i] = data.oMi[i].actInv(ov); // v in joint frame
    
-      data.a[i] = jdata.S() * jmodel.jointVelocitySelector(a) + jdata.c()  + (data.v[i] ^ jdata.v()); // a in joint frame
-      if(parent > 0)
-      {
-        data.a[i] += data.liMi[i].actInv(data.a[parent]);
-      }
-
       // Composite rigid body inertia
       Inertia & oY =  data.oYcrb[i] ;
 
       oY = data.oMi[i].act(model.inertias[i]);
-      data.oh[i] = oY * ov;
-      data.of[i] = oY * oa + ov.cross(data.oh[i]);
-      data.oBcrb[i] = Coriolis(oY, ov);
-
+      data.of[i] = oY*oa + oY.vxiv(ov);
+      data.oBcrb[i] = Coriolis(oY, ov );
     }
   };
   
@@ -156,62 +137,59 @@ namespace pinocchio
       ColsBlock ddJ_cols = jmodel.jointCols(data.ddJ);
       ColsBlock vdJ_cols = jmodel.jointCols(data.vdJ);
 
-      ColsBlock tmp1 = jmodel.jointCols(data.pmw_tmp1);
-      ColsBlock tmp2 = jmodel.jointCols(data.pmw_tmp2);
-      ColsBlock tmp3 = jmodel.jointCols(data.pmw_tmp3);
-      ColsBlock tmp4 = jmodel.jointCols(data.pmw_tmp4);
+      ColsBlock tmp1 = jmodel.jointCols(data.Ftmp1);
+      ColsBlock tmp2 = jmodel.jointCols(data.Ftmp2);
+      ColsBlock tmp3 = jmodel.jointCols(data.Ftmp3);
+      ColsBlock tmp4 = jmodel.jointCols(data.Ftmp4);
+
+      const Eigen::Index joint_idx  = (Eigen::Index) jmodel.idx_v();
+      const Eigen::Index joint_dofs = (Eigen::Index) jmodel.nv();
+      const Eigen::Index subtree_dofs = (Eigen::Index) data.nvSubtree[i];
+      const Eigen::Index successor_idx = joint_idx + joint_dofs;
+      const Eigen::Index successor_dofs = subtree_dofs -joint_dofs;
 
       Inertia & oYcrb = data.oYcrb[i];
       Coriolis& oBcrb = data.oBcrb[i];
 
-      
       MatrixType1 & rnea_partial_dq_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType1,rnea_partial_dq);
       MatrixType2 & rnea_partial_dv_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType2,rnea_partial_dv);
       MatrixType3 & rnea_partial_da_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType3,rnea_partial_da);
    
       // tau -- added joint torques here
       jmodel.jointVelocitySelector(data.tau).noalias() = J_cols.transpose()*data.of[i].toVector();
-      
-      // now tmp2 is set
-      motionSet::inertiaAction(oYcrb,J_cols,tmp1);
 
+      motionSet::inertiaAction(oYcrb,J_cols,tmp1);
+      
       motionSet::coriolisAction(oBcrb,J_cols,tmp2);
       motionSet::inertiaAction<ADDTO>(oYcrb,vdJ_cols,tmp2);
 
       motionSet::coriolisAction(oBcrb,dJ_cols,tmp3);
       motionSet::inertiaAction<ADDTO>(oYcrb,ddJ_cols,tmp3);
+      
       motionSet::act<ADDTO>(J_cols,data.of[i],tmp3);
 
       motionSet::coriolisTransposeAction(oBcrb,J_cols,tmp4);
 
-      // std::cout<<"----------------------------" << std::endl;
-      // std::cout << "jmodel.idx_v() is" << jmodel.idx_v() << std::endl;
-      // std::cout << "jmodel.nv() is" << jmodel.nv() << std::endl;
-      // std::cout << "data.nvSubtree[i] is" << data.nvSubtree[i] << std::endl;
-      // std::cout<<"----------------------------" << std::endl;
 
-      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
-        = J_cols.transpose()*data.pmw_tmp3.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
-
-      if(data.nvSubtree[i]!=jmodel.nv())
+      if( successor_dofs > 0 ) 
       {
-      rnea_partial_dq_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
-        = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*ddJ_cols 
-          + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*dJ_cols;
+      	rnea_partial_dq_.block( joint_idx, successor_idx, joint_dofs, successor_dofs ).noalias()
+        	= J_cols.transpose()*data.Ftmp3.middleCols( successor_idx, successor_dofs );
+
+        rnea_partial_dv_.block( joint_idx, successor_idx, joint_dofs, successor_dofs ).noalias()
+        	= J_cols.transpose()*data.Ftmp2.middleCols( successor_idx, successor_dofs );
       }
 
-      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias()
-        = J_cols.transpose()*data.pmw_tmp2.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
+      rnea_partial_dq_.block( joint_idx, joint_idx, subtree_dofs, joint_dofs ).noalias()
+        =  data.Ftmp1.middleCols( joint_idx, subtree_dofs ).transpose()*ddJ_cols 
+         + data.Ftmp4.middleCols( joint_idx, subtree_dofs ).transpose()*dJ_cols;
 
-      if(data.nvSubtree[i]!=jmodel.nv())
-      {
-      rnea_partial_dv_.block(jmodel.idx_v(),jmodel.idx_v(),data.nvSubtree[i],jmodel.nv()).noalias()
-        = data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*vdJ_cols
-          + data.pmw_tmp4.middleCols(jmodel.idx_v(),data.nvSubtree[i]).transpose()*J_cols;
-      }
-
-      rnea_partial_da_.block(jmodel.idx_v(),jmodel.idx_v(),jmodel.nv(),data.nvSubtree[i]).noalias() =
-        J_cols.transpose()*data.pmw_tmp1.middleCols(jmodel.idx_v(),data.nvSubtree[i]);
+      rnea_partial_dv_.block( joint_idx, joint_idx, subtree_dofs, joint_dofs ).noalias()
+        =   data.Ftmp1.middleCols( joint_idx, subtree_dofs ).transpose()*vdJ_cols
+          + data.Ftmp4.middleCols( joint_idx, subtree_dofs ).transpose()*J_cols;
+      
+      rnea_partial_da_.block( joint_idx, joint_idx, joint_dofs, subtree_dofs ).noalias() =
+        J_cols.transpose()*data.Ftmp1.middleCols( joint_idx, subtree_dofs );
 
 
       if(parent>0)
